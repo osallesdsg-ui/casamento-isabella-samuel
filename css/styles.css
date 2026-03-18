@@ -369,9 +369,11 @@ tbody tr:last-child td { border-bottom:none; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 560px) {
-  .info-row { grid-template-columns: 1fr; }
-  .info-row .divider-v { display: none; }
-  .info-item { border-bottom: 1px solid rgba(201,168,76,0.1); }
-  .info-item:last-child { border-bottom: none; }
+  /* Info row mantém 3 colunas no mobile */
+  .info-row { grid-template-columns: 1fr 1px 1fr 1px 1fr; }
+  .info-row .divider-v { display: block; }
+  .info-item { padding: 20px 8px; border-bottom: none; }
+  .info-item .info-value { font-size: 1rem; }
+  .info-item .tap-hint { font-size: 0.38rem; letter-spacing: 0.08em; }
   .popup-header, .popup-body { padding-left: 20px; padding-right: 20px; }
 }
