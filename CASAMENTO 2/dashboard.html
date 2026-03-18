@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Isabella & Samuel 💍</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💍</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+/* ── DASHBOARD LAYOUT ── */
+body { background:#f9f5f0; color:#1f2937; }
+
+/* LOGIN */
+#login-screen {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,var(--dark) 0%,var(--dark-mid) 100%);
+}
+.login-card {
+  background:#fff; border-radius:4px; padding:48px 40px;
+  width:100%; max-width:360px; text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+}
+.login-title {
+  font-family:var(--font-serif); font-size:2rem; font-style:italic;
+  color:var(--gold-dark); margin-bottom:4px;
+}
+.login-sub {
+  font-family:var(--font-display); font-size:0.58rem;
+  letter-spacing:0.25em; color:#9ca3af; text-transform:uppercase;
+  margin-bottom:32px;
+}
+.login-input {
+  width:100%; padding:12px 16px; text-align:center;
+  font-size:1.8rem; letter-spacing:0.4em;
+  border:2px solid #f0e9de; border-radius:var(--radius);
+  outline:none; transition:border-color 0.2s;
+  font-family:var(--font-serif); color:var(--dark);
+  margin-bottom:16px;
+}
+.login-input:focus { border-color:var(--gold); }
+.login-error {
+  color:#dc2626; font-family:var(--font-serif);
+  font-size:0.9rem; font-style:italic; margin-top:8px; min-height:1.5em;
+}
+
+/* SIDEBAR */
+#app { display:none; min-height:100vh; }
+.layout { display:flex; min-height:100vh; }
+
+.sidebar {
+  width:220px; flex-shrink:0; background:var(--dark);
+  display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.sidebar-logo {
+  padding:28px 20px 20px;
+  border-bottom:1px solid rgba(201,168,76,0.15);
+}
+.sidebar-logo-title {
+  font-family:var(--font-serif); font-size:1.1rem; font-style:italic;
+  color:var(--gold-light); line-height:1.2;
+}
+.sidebar-logo-sub {
+  font-family:var(--font-display); font-size:0.5rem;
+  letter-spacing:0.2em; color:var(--olive-light);
+  text-transform:uppercase; margin-top:4px;
+}
+
+.nav { padding:16px 0; flex:1; }
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 20px; font-family:var(--font-display);
+  font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--olive-light); cursor:pointer; transition:var(--transition);
+  border-left:2px solid transparent;
+}
+.nav-item:hover { color:var(--gold-light); background:rgba(201,168,76,0.05); }
+.nav-item.active {
+  color:var(--gold); background:rgba(201,168,76,0.08);
+  border-left-color:var(--gold);
+}
+.nav-item svg { width:16px; height:16px; flex-shrink:0; }
+
+.sidebar-footer {
+  padding:16px 20px; border-top:1px solid rgba(201,168,76,0.1);
+}
+.sidebar-footer a {
+  font-family:var(--font-display); font-size:0.52rem;
+  letter-spacing:0.15em; color:var(--olive-light);
+  text-transform:uppercase; transition:color 0.2s;
+}
+.sidebar-footer a:hover { color:var(--gold); }
+
+/* MAIN CONTENT */
+.main { flex:1; padding:32px; overflow-x:hidden; }
+
+.page-header { margin-bottom:28px; }
+.page-title {
+  font-family:var(--font-serif); font-size:2rem; font-style:italic;
+  color:var(--gold-dark);
+}
+.page-sub {
+  font-family:var(--font-display); font-size:0.58rem;
+  letter-spacing:0.2em; text-transform:uppercase; color:#9ca3af;
+  margin-top:4px;
+}
+
+/* SECTIONS */
+.section { display:none; }
+.section.active { display:block; }
+
+/* ── OVERVIEW ── */
+.stats-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:16px; margin-bottom:28px;
+}
+.stat-card {
+  background:#fff; border:1px solid #f0e9de; border-radius:var(--radius);
+  padding:20px 16px; text-align:center; box-shadow:var(--shadow);
+}
+.stat-number {
+  font-family:var(--font-serif); font-size:2.6rem;
+  font-weight:300; line-height:1; margin-bottom:6px;
+}
+.stat-label {
+  font-family:var(--font-display); font-size:0.5rem;
+  letter-spacing:0.2em; text-transform:uppercase; color:#9ca3af;
+}
+.stat-confirmados .stat-number { color:#16a34a; }
+.stat-naovao     .stat-number { color:#dc2626; }
+.stat-pendentes  .stat-number { color:#d97706; }
+.stat-total      .stat-number { color:var(--gold-dark); }
+.stat-sem        .stat-number { color:#9ca3af; }
+
+.progress-card {
+  background:#fff; border:1px solid #f0e9de; border-radius:var(--radius);
+  padding:20px 24px; margin-bottom:28px; box-shadow:var(--shadow);
+}
+.progress-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:12px;
+}
+.progress-label {
+  font-family:var(--font-display); font-size:0.58rem;
+  letter-spacing:0.18em; text-transform:uppercase; color:#6b7280;
+}
+.progress-pct { font-family:var(--font-serif); color:var(--gold-dark); font-size:1.1rem; }
+.progress-track {
+  height:6px; background:#f0e9de; border-radius:3px; overflow:hidden;
+}
+.progress-fill {
+  height:100%; background:linear-gradient(90deg,var(--gold-dark),var(--gold));
+  border-radius:3px; transition:width 1s ease; width:0%;
+}
+
+/* ── CONVIDADOS TABLE ── */
+.toolbar {
+  display:flex; gap:12px; flex-wrap:wrap;
+  align-items:center; margin-bottom:16px;
+}
+.search-wrap { flex:1; min-width:200px; position:relative; }
+.search-wrap svg {
+  position:absolute; left:11px; top:50%; transform:translateY(-50%);
+  color:#9ca3af; pointer-events:none; width:16px; height:16px;
+}
+.search-input {
+  width:100%; padding:9px 12px 9px 34px;
+  border:1.5px solid #e5e7eb; border-radius:var(--radius);
+  font-family:var(--font-serif); font-size:0.97rem; color:#1f2937;
+  outline:none; transition:border-color 0.2s; background:#fff;
+}
+.search-input:focus { border-color:var(--gold); }
+.search-input::placeholder { color:#9ca3af; }
+
+.filter-group { display:flex; gap:6px; flex-wrap:wrap; }
+.filter-btn {
+  padding:8px 14px; background:transparent;
+  border:1.5px solid #e5e7eb; border-radius:var(--radius);
+  font-family:var(--font-display); font-size:0.52rem;
+  letter-spacing:0.15em; text-transform:uppercase;
+  color:#6b7280; transition:var(--transition); white-space:nowrap;
+}
+.filter-btn:hover, .filter-btn.active {
+  border-color:var(--gold); color:var(--gold-dark);
+  background:rgba(201,168,76,0.06);
+}
+
+/* Convidados table specifics */
+.link-cell { display:flex; align-items:center; gap:6px; }
+.copy-link-btn {
+  padding:4px 8px; background:rgba(201,168,76,0.1);
+  border:1px solid rgba(201,168,76,0.3); border-radius:2px;
+  font-family:var(--font-display); font-size:0.48rem;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-dark);
+  transition:var(--transition); white-space:nowrap;
+}
+.copy-link-btn:hover { background:rgba(201,168,76,0.2); }
+
+.sent-check {
+  width:18px; height:18px; accent-color:var(--gold-dark); cursor:pointer;
+}
+
+.members-pill {
+  display:flex; flex-wrap:wrap; gap:4px; max-width:260px;
+}
+.member-tag {
+  padding:2px 8px; background:#f0e9de; border-radius:20px;
+  font-family:var(--font-serif); font-size:0.8rem; color:var(--olive-mid);
+  white-space:nowrap;
+}
+
+/* ── PRESENTES ── */
+.presentes-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:20px;
+}
+.presente-card {
+  background:#fff; border:1px solid #f0e9de; border-radius:var(--radius);
+  box-shadow:var(--shadow); overflow:hidden;
+  display:flex; flex-direction:column;
+}
+.presente-img {
+  width:100%; height:180px; object-fit:cover; background:#f9f5f0;
+  display:flex; align-items:center; justify-content:center;
+  color:#d1c9bd; font-size:2.5rem;
+}
+.presente-img img { width:100%; height:100%; object-fit:cover; }
+.presente-body { padding:16px; flex:1; }
+.presente-titulo {
+  font-family:var(--font-serif); font-size:1.1rem; color:#1f2937;
+  margin-bottom:4px;
+}
+.presente-desc {
+  font-family:var(--font-body); font-size:0.9rem; color:#6b7280;
+  line-height:1.5; margin-bottom:10px;
+}
+.presente-preco {
+  font-family:var(--font-serif); font-size:1.2rem; color:var(--gold-dark);
+  font-weight:600;
+}
+.presente-footer {
+  padding:12px 16px; border-top:1px solid #f0e9de;
+  display:flex; gap:8px;
+}
+
+/* Add button floating */
+.fab {
+  position:fixed; bottom:28px; right:28px;
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold));
+  color:#fff; border:none; font-size:1.5rem;
+  box-shadow:0 6px 20px rgba(201,168,76,0.4);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:var(--transition); z-index:100;
+}
+.fab:hover { transform:scale(1.08); box-shadow:0 8px 28px rgba(201,168,76,0.5); }
+
+/* ── ADD GROUP MODAL ── */
+.members-input-list { display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+.member-input-row { display:flex; gap:6px; }
+.member-input-row input { flex:1; }
+.remove-member-btn {
+  padding:8px 10px; background:none; border:1px solid #fca5a5;
+  border-radius:var(--radius); color:#dc2626; transition:var(--transition);
+}
+.remove-member-btn:hover { background:#fee2e2; }
+
+/* ── LAST UPDATED ── */
+.last-updated {
+  font-family:var(--font-display); font-size:0.52rem;
+  letter-spacing:0.15em; color:#9ca3af; text-transform:uppercase;
+  margin-top:4px;
+}
+
+/* ── LOADING STATE ── */
+.loading-row td {
+  text-align:center; padding:40px;
+  color:#9ca3af; font-style:italic;
+}
+
+/* responsive */
+@media (max-width:768px) {
+  .sidebar { width:180px; }
+  .main { padding:20px; }
+}
+@media (max-width:600px) {
+  .layout { flex-direction:column; }
+  .sidebar { width:100%; height:auto; position:static; }
+  .nav { display:flex; overflow-x:auto; padding:8px; }
+  .nav-item { white-space:nowrap; border-left:none; border-bottom:2px solid transparent; }
+  .nav-item.active { border-left:none; border-bottom-color:var(--gold); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOAST ════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ══ LOGIN ════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-title">Isabella & Samuel</div>
+    <div class="login-sub">Painel de Controle</div>
+    <input class="login-input" type="password" id="login-input"
+           placeholder="••••" maxlength="10"
+           onkeydown="if(event.key==='Enter') checkLogin()">
+    <button class="btn btn-gold" style="width:100%" onclick="checkLogin()">Entrar</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ══ APP ══════════════════════════════════════════════════════ -->
+<div id="app">
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-title">Isabella<br>& Samuel</div>
+        <div class="sidebar-logo-sub">07 · 11 · 2026</div>
+      </div>
+      <nav class="nav">
+        <div class="nav-item active" data-section="overview" onclick="switchSection(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Visão Geral
+        </div>
+        <div class="nav-item" data-section="convidados" onclick="switchSection(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Convidados
+        </div>
+        <div class="nav-item" data-section="confirmacoes" onclick="switchSection(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Confirmações
+        </div>
+        <div class="nav-item" data-section="presentes" onclick="switchSection(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          Presentes
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="index.html" target="_blank">↗ Ver site</a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- ── OVERVIEW ── -->
+      <section class="section active" id="section-overview">
+        <div class="page-header">
+          <div class="page-title">Visão Geral</div>
+          <div class="page-sub">Resumo de confirmações · <span id="overview-updated" class="last-updated"></span></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card stat-total">
+            <div class="stat-number" id="stat-total">—</div>
+            <div class="stat-label">responderam</div>
+          </div>
+          <div class="stat-card stat-confirmados">
+            <div class="stat-number" id="stat-confirmados">—</div>
+            <div class="stat-label">confirmados</div>
+          </div>
+          <div class="stat-card stat-naovao">
+            <div class="stat-number" id="stat-naovao">—</div>
+            <div class="stat-label">não vão</div>
+          </div>
+          <div class="stat-card stat-pendentes">
+            <div class="stat-number" id="stat-pendentes">—</div>
+            <div class="stat-label">pendentes</div>
+          </div>
+          <div class="stat-card stat-sem">
+            <div class="stat-number" id="stat-sem">—</div>
+            <div class="stat-label">sem resposta</div>
+          </div>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-header">
+            <span class="progress-label">Confirmados no total</span>
+            <span class="progress-pct" id="progress-pct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Recent confirmations -->
+        <div style="font-family:var(--font-display);font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:#6b7280;margin-bottom:12px">
+          Confirmações recentes
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Nome</th>
+              <th>Status</th>
+              <th class="hide-mobile">Grupo</th>
+              <th class="hide-mobile">Atualizado</th>
+            </tr></thead>
+            <tbody id="recent-tbody">
+              <tr class="loading-row"><td colspan="4">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── CONVIDADOS ── -->
+      <section class="section" id="section-convidados">
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="page-title">Convidados</div>
+            <div class="page-sub">Gerenciar grupos, links e envios</div>
+          </div>
+          <button class="btn btn-gold" onclick="openAddGroupModal()">
+            + Novo Grupo
+          </button>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input class="search-input" id="guest-search" placeholder="Buscar por nome ou grupo…" oninput="filterGuests()">
+          </div>
+          <div class="filter-group">
+            <button class="filter-btn active" data-sent="all"     onclick="filterBySent(this)">Todos</button>
+            <button class="filter-btn"        data-sent="false"   onclick="filterBySent(this)">Não enviado</button>
+            <button class="filter-btn"        data-sent="true"    onclick="filterBySent(this)">Enviado</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Grupo</th>
+              <th>Membros</th>
+              <th>Link</th>
+              <th style="text-align:center">Enviado?</th>
+              <th>Ações</th>
+            </tr></thead>
+            <tbody id="guests-tbody">
+              <tr class="loading-row"><td colspan="5">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── CONFIRMAÇÕES ── -->
+      <section class="section" id="section-confirmacoes">
+        <div class="page-header">
+          <div class="page-title">Confirmações</div>
+          <div class="page-sub">Todas as respostas recebidas</div>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input class="search-input" id="conf-search" placeholder="Buscar por nome…" oninput="filterConfirmacoes()">
+          </div>
+          <div class="filter-group">
+            <button class="filter-btn active" data-status="all"        onclick="filterByStatus(this)">Todos</button>
+            <button class="filter-btn"        data-status="Confirmado" onclick="filterByStatus(this)">✓ Confirmados</button>
+            <button class="filter-btn"        data-status="Não vai"    onclick="filterByStatus(this)">✕ Não vão</button>
+            <button class="filter-btn"        data-status="Pendente"   onclick="filterByStatus(this)">⏳ Pendentes</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Nome</th>
+              <th>Status</th>
+              <th class="hide-mobile">Grupo</th>
+              <th class="hide-mobile">Atualizado em</th>
+              <th class="hide-mobile">Editado?</th>
+            </tr></thead>
+            <tbody id="conf-tbody">
+              <tr class="loading-row"><td colspan="5">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── PRESENTES ── -->
+      <section class="section" id="section-presentes">
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="page-title">Lista de Presentes</div>
+            <div class="page-sub">Itens exibidos no site para os convidados</div>
+          </div>
+          <button class="btn btn-gold" onclick="openPresenteModal()">
+            + Adicionar Presente
+          </button>
+        </div>
+
+        <div id="presentes-grid" class="presentes-grid">
+          <div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3af;font-style:italic">
+            Carregando presentes…
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ══ MODAL: NOVO GRUPO ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-group">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-group-title">Novo Grupo</div>
+      <button class="modal-close" onclick="closeModal('modal-group')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="form-group">
+        <label class="form-label">ID do Grupo (sem espaços, ex: amigos_joao)</label>
+        <input class="form-input" id="group-id" placeholder="amigos_joao_maria">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nome do Grupo</label>
+        <input class="form-input" id="group-label" placeholder="Amigos — João & Maria">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Membros</label>
+        <div class="members-input-list" id="members-input-list">
+          <div class="member-input-row">
+            <input class="form-input" placeholder="Nome completo do membro">
+            <button class="remove-member-btn" onclick="removeMemberRow(this)">✕</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;margin-top:4px" onclick="addMemberRow()">
+          + Adicionar membro
+        </button>
+      </div>
+      <button class="btn btn-gold" style="width:100%" onclick="saveGroup()">
+        Salvar Grupo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: PRESENTE ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-presente">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-presente-title">Novo Presente</div>
+      <button class="modal-close" onclick="closeModal('modal-presente')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="form-group">
+        <label class="form-label">Título</label>
+        <input class="form-input" id="presente-titulo" placeholder="Ex: Jogo de Panelas">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrição</label>
+        <textarea class="form-textarea" id="presente-descricao" placeholder="Breve descrição do presente…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Preço (R$)</label>
+        <input class="form-input" id="presente-preco" type="number" step="0.01" placeholder="299.90">
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL da Imagem</label>
+        <input class="form-input" id="presente-imagem" placeholder="https://...">
+        <small style="color:#9ca3af;font-size:0.82rem;margin-top:2px">Cole o link da imagem do produto</small>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chave PIX</label>
+        <input class="form-input" id="presente-pix" placeholder="seu@email.com ou CPF">
+      </div>
+      <input type="hidden" id="presente-id">
+      <button class="btn btn-gold" style="width:100%" onclick="savePresente()">
+        Salvar Presente
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCRIPTS ═══════════════════════════════════════════════════ -->
+<script src="js/supabase.js"></script>
+<script src="js/groups.js"></script>
+<script>
+const DASHBOARD_PASSWORD = '0912';
+
+function sbSelect(table, filter, select) { return window.SB.sbSelect(table, filter, select); }
+function sbInsert(table, data)           { return window.SB.sbInsert(table, data); }
+function sbUpdate(table, filter, data)   { return window.SB.sbUpdate(table, filter, data); }
+function sbDelete(table, filter)         { return window.SB.sbDelete(table, filter); }
+
+/* ══ LOGIN ══════════════════════════════════════════════════════ */
+function checkLogin() {
+  const val = document.getElementById('login-input').value;
+  if (val === DASHBOARD_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initDashboard();
+  } else {
+    document.getElementById('login-error').textContent = 'Senha incorreta.';
+    document.getElementById('login-input').value = '';
+  }
+}
+
+/* ══ NAVIGATION ═════════════════════════════════════════════════ */
+function switchSection(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('section-' + el.dataset.section).classList.add('active');
+  loadSection(el.dataset.section);
+}
+
+/* ══ INIT ═══════════════════════════════════════════════════════ */
+function initDashboard() {
+  syncGroupsToSupabase();
+  loadSection('overview');
+}
+
+function loadSection(name) {
+  if (name === 'overview')      loadOverview();
+  if (name === 'convidados')    loadConvidados();
+  if (name === 'confirmacoes')  loadConfirmacoes();
+  if (name === 'presentes')     loadPresentes();
+}
+
+/* ══ SYNC GRUPOS TO SUPABASE ════════════════════════════════════ */
+async function syncGroupsToSupabase() {
+  try {
+    const existing = await sbSelect('grupos');
+    const existingIds = new Set((existing || []).map(g => g.id));
+    for (const [id, g] of Object.entries(GRUPOS)) {
+      if (!existingIds.has(id)) {
+        await sbInsert('grupos', { id, label: g.label });
+        for (let i = 0; i < g.membros.length; i++) {
+          await sbInsert('membros', { grupo_id: id, nome: g.membros[i], ordem: i });
+        }
+        await sbInsert('links_enviados', { grupo_id: id, enviado: false });
+      }
+    }
+  } catch(e) { console.error('Sync error:', e); }
+}
+
+/* ══ TOAST ══════════════════════════════════════════════════════ */
+function toast(msg, type = 'success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+/* ══ MODAL ══════════════════════════════════════════════════════ */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+/* ══ OVERVIEW ═══════════════════════════════════════════════════ */
+let allConfs = [];
+
+async function loadOverview() {
+  try {
+    allConfs = await sbSelect('confirmacoes') || [];
+    const total        = allConfs.length;
+    const confirmados  = allConfs.filter(r => r.status === 'Confirmado').length;
+    const naovao       = allConfs.filter(r => r.status === 'Não vai').length;
+    const pendentes    = allConfs.filter(r => r.status === 'Pendente').length;
+    const totalConv    = Object.values(GRUPOS).reduce((a,g) => a + g.membros.length, 0);
+    const sem          = Math.max(0, totalConv - total);
+
+    setText('stat-total',      total);
+    setText('stat-confirmados', confirmados);
+    setText('stat-naovao',     naovao);
+    setText('stat-pendentes',  pendentes);
+    setText('stat-sem',        sem);
+
+    const pct = totalConv ? Math.round((confirmados / totalConv) * 100) : 0;
+    setText('progress-pct', pct + '%');
+    document.getElementById('progress-fill').style.width = pct + '%';
+
+    // Recent 10
+    const recent = [...allConfs].sort((a,b) => new Date(b.ultima_atualizacao) - new Date(a.ultima_atualizacao)).slice(0, 10);
+    document.getElementById('recent-tbody').innerHTML = recent.length
+      ? recent.map(r => `<tr>
+          <td>${r.nome}</td>
+          <td>${badgeHtml(r.status)}</td>
+          <td class="hide-mobile td-muted">${r.grupo_id}</td>
+          <td class="hide-mobile td-muted">${formatDate(r.ultima_atualizacao)}</td>
+        </tr>`).join('')
+      : '<tr class="loading-row"><td colspan="4">Nenhuma confirmação ainda.</td></tr>';
+
+    document.getElementById('overview-updated').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
+  } catch(e) { toast('Erro ao carregar visão geral', 'error'); }
+}
+
+/* ══ CONVIDADOS ═════════════════════════════════════════════════ */
+let allGroups     = [];
+let sentMap       = {};
+let guestFilter   = 'all';
+
+async function loadConvidados() {
+  try {
+    const links = await sbSelect('links_enviados') || [];
+    sentMap = {};
+    links.forEach(l => sentMap[l.grupo_id] = l.enviado);
+
+    // Build from GRUPOS object
+    allGroups = Object.entries(GRUPOS).map(([id, g]) => ({
+      id, label: g.label, membros: g.membros,
+      enviado: sentMap[id] || false
+    }));
+
+    renderGuestsTable(allGroups);
+  } catch(e) { toast('Erro ao carregar convidados', 'error'); }
+}
+
+function renderGuestsTable(data) {
+  const search = (document.getElementById('guest-search')?.value || '').toLowerCase();
+  const filtered = data.filter(g => {
+    const matchSent = guestFilter === 'all' ? true
+      : guestFilter === 'true' ? g.enviado : !g.enviado;
+    const matchSearch = !search
+      || g.label.toLowerCase().includes(search)
+      || g.membros.some(m => m.toLowerCase().includes(search));
+    return matchSent && matchSearch;
+  });
+
+  const link = id => `${SITE_BASE_URL}?g=${id}`;
+
+  document.getElementById('guests-tbody').innerHTML = filtered.length
+    ? filtered.map(g => `
+      <tr>
+        <td>
+          <div style="font-family:var(--font-serif);font-weight:500">${g.label}</div>
+          <div class="td-muted" style="font-size:0.78rem">${g.id}</div>
+        </td>
+        <td>
+          <div class="members-pill">
+            ${g.membros.map(m => `<span class="member-tag">${m}</span>`).join('')}
+          </div>
+        </td>
+        <td>
+          <div class="link-cell">
+            <button class="copy-link-btn" onclick="copyLink('${g.id}')">📋 Copiar</button>
+            <a href="${link(g.id)}" target="_blank" style="color:var(--gold-dark);font-size:0.8rem">↗</a>
+          </div>
+        </td>
+        <td style="text-align:center">
+          <input type="checkbox" class="sent-check" ${g.enviado ? 'checked' : ''}
+                 onchange="toggleSent('${g.id}', this.checked)">
+        </td>
+        <td>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost" style="padding:6px 10px;font-size:0.5rem"
+                    onclick="openEditGroupModal('${g.id}')">✏️</button>
+            <button class="btn btn-danger" style="padding:6px 10px;font-size:0.5rem"
+                    onclick="deleteGroup('${g.id}')">🗑</button>
+          </div>
+        </td>
+      </tr>`).join('')
+    : '<tr class="loading-row"><td colspan="5">Nenhum grupo encontrado.</td></tr>';
+}
+
+function filterGuests() { renderGuestsTable(allGroups); }
+function filterBySent(btn) {
+  document.querySelectorAll('[data-sent]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  guestFilter = btn.dataset.sent;
+  renderGuestsTable(allGroups);
+}
+
+function copyLink(id) {
+  const url = `${SITE_BASE_URL}?g=${id}`;
+  navigator.clipboard.writeText(url).then(() => toast('Link copiado! 📋'));
+}
+
+async function toggleSent(id, val) {
+  try {
+    await sbUpdate('links_enviados', `grupo_id=eq.${id}`, { enviado: val, enviado_em: val ? new Date().toISOString() : null });
+    sentMap[id] = val;
+    toast(val ? 'Marcado como enviado ✓' : 'Desmarcado');
+  } catch(e) {
+    // Try insert if not exists
+    try {
+      await sbInsert('links_enviados', { grupo_id: id, enviado: val });
+      sentMap[id] = val;
+    } catch(e2) { toast('Erro ao salvar', 'error'); }
+  }
+}
+
+/* ══ ADD/EDIT GROUP ═════════════════════════════════════════════ */
+let editingGroupId = null;
+
+function openAddGroupModal() {
+  editingGroupId = null;
+  document.getElementById('modal-group-title').textContent = 'Novo Grupo';
+  document.getElementById('group-id').value = '';
+  document.getElementById('group-id').disabled = false;
+  document.getElementById('group-label').value = '';
+  document.getElementById('members-input-list').innerHTML = `
+    <div class="member-input-row">
+      <input class="form-input" placeholder="Nome completo do membro">
+      <button class="remove-member-btn" onclick="removeMemberRow(this)">✕</button>
+    </div>`;
+  openModal('modal-group');
+}
+
+function openEditGroupModal(id) {
+  const g = GRUPOS[id];
+  if (!g) return;
+  editingGroupId = id;
+  document.getElementById('modal-group-title').textContent = 'Editar Grupo';
+  document.getElementById('group-id').value = id;
+  document.getElementById('group-id').disabled = true;
+  document.getElementById('group-label').value = g.label;
+  const list = document.getElementById('members-input-list');
+  list.innerHTML = g.membros.map(m => `
+    <div class="member-input-row">
+      <input class="form-input" value="${m}" placeholder="Nome completo">
+      <button class="remove-member-btn" onclick="removeMemberRow(this)">✕</button>
+    </div>`).join('');
+  openModal('modal-group');
+}
+
+function addMemberRow() {
+  const list = document.getElementById('members-input-list');
+  const row = document.createElement('div');
+  row.className = 'member-input-row';
+  row.innerHTML = `<input class="form-input" placeholder="Nome completo do membro">
+    <button class="remove-member-btn" onclick="removeMemberRow(this)">✕</button>`;
+  list.appendChild(row);
+}
+
+function removeMemberRow(btn) {
+  btn.parentElement.remove();
+}
+
+async function saveGroup() {
+  const id    = document.getElementById('group-id').value.trim().replace(/\s+/g,'_');
+  const label = document.getElementById('group-label').value.trim();
+  const inputs = document.querySelectorAll('#members-input-list input');
+  const membros = [...inputs].map(i => i.value.trim()).filter(Boolean);
+
+  if (!id || !label || !membros.length) { toast('Preencha todos os campos', 'error'); return; }
+
+  try {
+    if (editingGroupId) {
+      // Update label
+      await sbUpdate('grupos', `id=eq.${editingGroupId}`, { label });
+      // Delete old members and re-insert
+      await sbDelete('membros', `grupo_id=eq.${editingGroupId}`);
+      for (let i = 0; i < membros.length; i++) {
+        await sbInsert('membros', { grupo_id: editingGroupId, nome: membros[i], ordem: i });
+      }
+      // Update local
+      GRUPOS[editingGroupId] = { label, membros };
+      toast('Grupo atualizado! ✓');
+    } else {
+      await sbInsert('grupos', { id, label });
+      for (let i = 0; i < membros.length; i++) {
+        await sbInsert('membros', { grupo_id: id, nome: membros[i], ordem: i });
+      }
+      await sbInsert('links_enviados', { grupo_id: id, enviado: false });
+      GRUPOS[id] = { label, membros };
+      toast('Grupo criado! ✓');
+    }
+    closeModal('modal-group');
+    loadConvidados();
+  } catch(e) { toast('Erro ao salvar grupo', 'error'); console.error(e); }
+}
+
+async function deleteGroup(id) {
+  if (!confirm(`Remover grupo "${GRUPOS[id]?.label}"?\nIsso também remove as confirmações associadas.`)) return;
+  try {
+    await sbDelete('confirmacoes', `grupo_id=eq.${id}`);
+    await sbDelete('membros', `grupo_id=eq.${id}`);
+    await sbDelete('links_enviados', `grupo_id=eq.${id}`);
+    await sbDelete('grupos', `id=eq.${id}`);
+    delete GRUPOS[id];
+    toast('Grupo removido');
+    loadConvidados();
+  } catch(e) { toast('Erro ao remover grupo', 'error'); }
+}
+
+/* ══ CONFIRMAÇÕES ═══════════════════════════════════════════════ */
+let allConfsData  = [];
+let confStatus    = 'all';
+
+async function loadConfirmacoes() {
+  try {
+    allConfsData = await sbSelect('confirmacoes') || [];
+    renderConfsTable();
+  } catch(e) { toast('Erro ao carregar confirmações', 'error'); }
+}
+
+function renderConfsTable() {
+  const search = (document.getElementById('conf-search')?.value || '').toLowerCase();
+  const filtered = allConfsData.filter(r => {
+    const ms = confStatus === 'all' || r.status === confStatus;
+    const ms2 = !search || r.nome.toLowerCase().includes(search) || r.grupo_id.toLowerCase().includes(search);
+    return ms && ms2;
+  });
+
+  document.getElementById('conf-tbody').innerHTML = filtered.length
+    ? filtered.map(r => `<tr>
+        <td style="font-family:var(--font-serif)">${r.nome}</td>
+        <td>${badgeHtml(r.status)}</td>
+        <td class="hide-mobile td-muted">${GRUPOS[r.grupo_id]?.label || r.grupo_id}</td>
+        <td class="hide-mobile td-muted">${formatDate(r.ultima_atualizacao)}</td>
+        <td class="hide-mobile">${r.editado ? '<span style="color:var(--gold-dark)">Sim</span>' : '—'}</td>
+      </tr>`).join('')
+    : '<tr class="loading-row"><td colspan="5">Nenhuma confirmação.</td></tr>';
+}
+
+function filterConfirmacoes() { renderConfsTable(); }
+function filterByStatus(btn) {
+  document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  confStatus = btn.dataset.status;
+  renderConfsTable();
+}
+
+/* ══ PRESENTES ══════════════════════════════════════════════════ */
+let allPresentes = [];
+let editingPresenteId = null;
+
+async function loadPresentes() {
+  try {
+    allPresentes = await sbSelect('presentes', 'order=ordem.asc') || [];
+    renderPresentes();
+  } catch(e) { toast('Erro ao carregar presentes', 'error'); }
+}
+
+function renderPresentes() {
+  const grid = document.getElementById('presentes-grid');
+  if (!allPresentes.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#9ca3af;font-style:italic">Nenhum presente cadastrado ainda.<br>Clique em "+ Adicionar Presente" para começar.</div>';
+    return;
+  }
+  grid.innerHTML = allPresentes.map(p => `
+    <div class="presente-card">
+      <div class="presente-img">
+        ${p.imagem_url ? `<img src="${p.imagem_url}" alt="${p.titulo}" onerror="this.parentElement.innerHTML='🎁'">` : '🎁'}
+      </div>
+      <div class="presente-body">
+        <div class="presente-titulo">${p.titulo}</div>
+        ${p.descricao ? `<div class="presente-desc">${p.descricao}</div>` : ''}
+        ${p.preco ? `<div class="presente-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>` : ''}
+        ${p.chave_pix ? `<div class="td-muted" style="font-size:0.82rem;margin-top:6px">PIX: ${p.chave_pix}</div>` : ''}
+      </div>
+      <div class="presente-footer">
+        <button class="btn btn-ghost" style="flex:1" onclick="openPresenteModal('${p.id}')">✏️ Editar</button>
+        <button class="btn btn-danger" style="flex:1" onclick="deletePresente('${p.id}')">🗑 Remover</button>
+      </div>
+    </div>`).join('');
+}
+
+function openPresenteModal(id = null) {
+  editingPresenteId = id;
+  document.getElementById('modal-presente-title').textContent = id ? 'Editar Presente' : 'Novo Presente';
+  if (id) {
+    const p = allPresentes.find(x => x.id === id);
+    if (p) {
+      document.getElementById('presente-titulo').value    = p.titulo || '';
+      document.getElementById('presente-descricao').value = p.descricao || '';
+      document.getElementById('presente-preco').value     = p.preco || '';
+      document.getElementById('presente-imagem').value    = p.imagem_url || '';
+      document.getElementById('presente-pix').value       = p.chave_pix || '';
+      document.getElementById('presente-id').value        = p.id;
+    }
+  } else {
+    ['titulo','descricao','preco','imagem','pix'].forEach(f =>
+      document.getElementById('presente-' + f).value = '');
+    document.getElementById('presente-id').value = '';
+  }
+  openModal('modal-presente');
+}
+
+async function savePresente() {
+  const data = {
+    titulo:      document.getElementById('presente-titulo').value.trim(),
+    descricao:   document.getElementById('presente-descricao').value.trim(),
+    preco:       parseFloat(document.getElementById('presente-preco').value) || null,
+    imagem_url:  document.getElementById('presente-imagem').value.trim(),
+    chave_pix:   document.getElementById('presente-pix').value.trim(),
+  };
+  if (!data.titulo) { toast('Título é obrigatório', 'error'); return; }
+
+  try {
+    if (editingPresenteId) {
+      await sbUpdate('presentes', `id=eq.${editingPresenteId}`, data);
+      toast('Presente atualizado! ✓');
+    } else {
+      data.ordem = allPresentes.length;
+      await sbInsert('presentes', data);
+      toast('Presente adicionado! ✓');
+    }
+    closeModal('modal-presente');
+    loadPresentes();
+  } catch(e) { toast('Erro ao salvar presente', 'error'); console.error(e); }
+}
+
+async function deletePresente(id) {
+  if (!confirm('Remover este presente?')) return;
+  try {
+    await sbDelete('presentes', `id=eq.${id}`);
+    toast('Presente removido');
+    loadPresentes();
+  } catch(e) { toast('Erro ao remover', 'error'); }
+}
+
+/* ══ HELPERS ════════════════════════════════════════════════════ */
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function badgeHtml(status) {
+  const map = {
+    'Confirmado': 'badge-yes',
+    'Não vai':    'badge-no',
+    'Pendente':   'badge-pending'
+  };
+  return `<span class="badge ${map[status] || 'badge-none'}">${status || '—'}</span>`;
+}
+
+function formatDate(str) {
+  if (!str) return '—';
+  return new Date(str).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Presentes — Isabella & Samuel 💍</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💍</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+body { background: #faf7f2; color: #1f2937; }
+
+/* ── HEADER ── */
+.page-header {
+  background: var(--dark);
+  padding: 40px 24px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-display); font-size: 0.55rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--olive-light); margin-bottom: 20px;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--gold); }
+.page-title {
+  font-family: var(--font-serif); font-size: clamp(2rem,6vw,3rem);
+  font-style: italic; color: var(--gold-light); margin-bottom: 8px;
+}
+.page-sub {
+  font-family: var(--font-display); font-size: 0.6rem;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--olive-light);
+}
+
+/* ── MESSAGE ── */
+.message-card {
+  max-width: 640px; margin: 32px auto; padding: 0 20px;
+  text-align: center;
+}
+.message-text {
+  font-family: var(--font-serif); font-size: 1.05rem;
+  color: #6b7280; line-height: 1.8; font-style: italic;
+}
+
+/* ── GRID ── */
+.gifts-container {
+  max-width: 1100px; margin: 0 auto; padding: 0 20px 60px;
+}
+.gifts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* ── CARD ── */
+.gift-card {
+  background: #fff;
+  border: 1px solid #f0e9de;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: transform 0.25s, box-shadow 0.25s;
+  display: flex; flex-direction: column;
+}
+.gift-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+}
+.gift-img {
+  width: 100%; height: 200px;
+  display: flex; align-items: center; justify-content: center;
+  background: #f9f5f0; font-size: 3rem; color: #d1c9bd;
+  overflow: hidden; flex-shrink: 0;
+}
+.gift-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.gift-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+.gift-title {
+  font-family: var(--font-serif); font-size: 1.15rem;
+  color: #1f2937; margin-bottom: 6px;
+}
+.gift-desc {
+  font-family: var(--font-body); font-size: 0.9rem;
+  color: #6b7280; line-height: 1.55; flex: 1; margin-bottom: 12px;
+}
+.gift-price {
+  font-family: var(--font-serif); font-size: 1.3rem;
+  color: var(--gold-dark); font-weight: 600; margin-bottom: 14px;
+}
+
+/* PIX MODAL */
+.pix-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px; width: 100%;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #fff; border: none; border-radius: 2px;
+  font-family: var(--font-display); font-size: 0.62rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.pix-btn:hover { opacity: 0.9; }
+
+/* PIX Modal */
+#pix-modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+#pix-modal-overlay.open { opacity: 1; pointer-events: all; }
+.pix-modal {
+  background: #fff; border-radius: 4px; padding: 36px;
+  width: 100%; max-width: 420px; text-align: center;
+  transform: translateY(16px); transition: transform 0.25s;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+#pix-modal-overlay.open .pix-modal { transform: translateY(0); }
+.pix-modal-title {
+  font-family: var(--font-serif); font-size: 1.5rem;
+  font-style: italic; color: var(--gold-dark); margin-bottom: 6px;
+}
+.pix-modal-gift {
+  font-family: var(--font-display); font-size: 0.6rem;
+  letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af;
+  margin-bottom: 24px;
+}
+.pix-key-box {
+  background: #f9f5f0; border: 1.5px solid #f0e9de; border-radius: 3px;
+  padding: 14px 16px; margin-bottom: 16px;
+  font-family: var(--font-serif); font-size: 1.1rem;
+  color: var(--dark); word-break: break-all;
+}
+.pix-copy-btn {
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #fff; border: none; border-radius: 2px;
+  font-family: var(--font-display); font-size: 0.62rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  cursor: pointer; margin-bottom: 12px; transition: opacity 0.2s;
+}
+.pix-copy-btn:hover { opacity: 0.9; }
+.pix-close-btn {
+  background: none; border: none;
+  font-family: var(--font-display); font-size: 0.58rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: #9ca3af; cursor: pointer; transition: color 0.2s;
+}
+.pix-close-btn:hover { color: #374151; }
+.pix-note {
+  font-family: var(--font-serif); font-size: 0.9rem;
+  color: #9ca3af; font-style: italic; margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Loading / empty */
+.gifts-loading {
+  grid-column: 1 / -1; text-align: center; padding: 60px;
+  color: #9ca3af; font-family: var(--font-serif);
+  font-size: 1.05rem; font-style: italic;
+}
+
+/* FOOTER */
+.site-footer {
+  background: var(--dark); padding: 32px 20px; text-align: center;
+  border-top: 1px solid rgba(201,168,76,0.1);
+}
+.site-footer small {
+  font-family: var(--font-display); font-size: 0.55rem;
+  letter-spacing: 0.2em; color: var(--olive-light); opacity: 0.5;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ════════════════════════════════════════════════════ -->
+<header class="page-header">
+  <a class="back-link" href="index.html">← voltar ao convite</a>
+  <h1 class="page-title">Lista de Presentes</h1>
+  <p class="page-sub">Isabella &amp; Samuel · 07.11.2026</p>
+</header>
+
+<!-- ══ MESSAGE ═══════════════════════════════════════════════════ -->
+<div class="message-card">
+  <p class="message-text">
+    A sua presença já é o nosso maior presente. Mas se quiser nos presentear com algo especial,
+    selecionamos alguns itens que tornariam nossa nova casa ainda mais especial. 💛
+  </p>
+</div>
+
+<!-- ══ GIFTS ═════════════════════════════════════════════════════ -->
+<div class="gifts-container">
+  <div class="gifts-grid" id="gifts-grid">
+    <div class="gifts-loading">Carregando lista de presentes…</div>
+  </div>
+</div>
+
+<!-- ══ PIX MODAL ═════════════════════════════════════════════════ -->
+<div id="pix-modal-overlay" onclick="closePix(event)">
+  <div class="pix-modal">
+    <div class="pix-modal-title">Presentear com PIX</div>
+    <div class="pix-modal-gift" id="pix-gift-name"></div>
+    <p class="pix-note">Copie a chave PIX abaixo e realize o pagamento pelo seu banco.</p>
+    <div class="pix-key-box" id="pix-key-display"></div>
+    <button class="pix-copy-btn" onclick="copyPix()">📋 Copiar chave PIX</button>
+    <br>
+    <button class="pix-close-btn" onclick="closePix()">Fechar</button>
+  </div>
+</div>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <small>© 2026 Isabella &amp; Samuel — feito com amor 💍</small>
+</footer>
+
+<!-- ══ SCRIPTS ═══════════════════════════════════════════════════ -->
+<script src="js/supabase.js"></script>
+<script>
+let currentPix = '';
+
+async function loadGifts() {
+  try {
+    const { sbSelect } = window.SB;
+    const presentes = await sbSelect('presentes', 'order=ordem.asc') || [];
+    const grid = document.getElementById('gifts-grid');
+
+    if (!presentes.length) {
+      grid.innerHTML = '<div class="gifts-loading">Nenhum presente cadastrado ainda.</div>';
+      return;
+    }
+
+    grid.innerHTML = presentes.map(p => `
+      <div class="gift-card">
+        <div class="gift-img">
+          ${p.imagem_url
+            ? `<img src="${p.imagem_url}" alt="${p.titulo}" onerror="this.parentElement.innerHTML='🎁'">`
+            : '🎁'}
+        </div>
+        <div class="gift-body">
+          <div class="gift-title">${p.titulo}</div>
+          ${p.descricao ? `<div class="gift-desc">${p.descricao}</div>` : '<div class="gift-desc"></div>'}
+          ${p.preco ? `<div class="gift-price">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>` : ''}
+          ${p.chave_pix
+            ? `<button class="pix-btn" onclick="openPix('${p.titulo.replace(/'/g,"\\'")}','${p.chave_pix}')">
+                💛 Presentear com PIX
+               </button>`
+            : ''}
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('gifts-grid').innerHTML =
+      '<div class="gifts-loading">Erro ao carregar presentes. Tente novamente.</div>';
+  }
+}
+
+function openPix(nome, chave) {
+  currentPix = chave;
+  document.getElementById('pix-gift-name').textContent = nome;
+  document.getElementById('pix-key-display').textContent = chave;
+  document.getElementById('pix-modal-overlay').classList.add('open');
+}
+
+function closePix(e) {
+  if (!e || e.target === document.getElementById('pix-modal-overlay')) {
+    document.getElementById('pix-modal-overlay').classList.remove('open');
+  }
+}
+
+function copyPix() {
+  navigator.clipboard.writeText(currentPix).then(() => {
+    const btn = document.querySelector('.pix-copy-btn');
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar chave PIX', 2000);
+  });
+}
+
+loadGifts();
+</script>
+</body>
+</html>

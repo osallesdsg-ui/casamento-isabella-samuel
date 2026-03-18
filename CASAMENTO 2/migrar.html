@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Migração — Isabella & Samuel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-dark: #8a6e2f;
+    --dark: #1a1610;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    background: #faf7f2; color: #1f2937;
+    min-height: 100vh; display: flex;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    background: #fff; border: 1px solid #f0e9de;
+    border-radius: 4px; padding: 40px;
+    width: 100%; max-width: 580px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-style: italic;
+    color: var(--gold-dark); margin-bottom: 6px;
+  }
+  .sub {
+    font-family: 'Cinzel', serif; font-size: 0.55rem;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: #9ca3af; margin-bottom: 28px;
+  }
+  .info-box {
+    background: #fef9c3; border: 1px solid #fde047;
+    border-radius: 3px; padding: 14px 16px;
+    font-size: 0.92rem; color: #854d0e; margin-bottom: 24px;
+    line-height: 1.6;
+  }
+  .btn {
+    display: block; width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: #fff; border: none; border-radius: 3px;
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer; transition: opacity 0.2s; margin-bottom: 12px;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  #log {
+    margin-top: 24px;
+    border: 1px solid #f0e9de; border-radius: 3px;
+    padding: 16px; background: #faf7f2;
+    max-height: 320px; overflow-y: auto;
+    display: none;
+  }
+  .log-item {
+    font-size: 0.88rem; padding: 4px 0;
+    border-bottom: 1px solid #f0e9de; line-height: 1.5;
+  }
+  .log-item:last-child { border-bottom: none; }
+  .log-ok      { color: #166534; }
+  .log-skip    { color: #9ca3af; }
+  .log-error   { color: #dc2626; }
+  .log-info    { color: var(--gold-dark); font-weight: 600; }
+
+  #summary {
+    display: none; margin-top: 20px;
+    padding: 16px; border-radius: 3px;
+    border: 1px solid #bbf7d0; background: #f0fdf4;
+    font-size: 1rem; color: #166534; text-align: center;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Migração de Dados</h1>
+  <div class="sub">Google Sheets → Supabase</div>
+
+  <div class="info-box">
+    ⚠️ Este utilitário importa todas as confirmações do Google Sheets antigo para o Supabase.<br>
+    Execute apenas <strong>uma vez</strong>. Se uma confirmação já existir no Supabase, ela será ignorada.
+  </div>
+
+  <button class="btn" id="btn-migrate" onclick="startMigration()">
+    🚀 Iniciar Migração
+  </button>
+  <button class="btn" onclick="window.location='dashboard.html'"
+          style="background:transparent;color:var(--gold-dark);border:1.5px solid var(--gold)">
+    ← Voltar ao Dashboard
+  </button>
+
+  <div id="log"></div>
+  <div id="summary"></div>
+</div>
+
+<script src="js/supabase.js"></script>
+<script>
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTHH5AkxiI7BgeUmE5Ffak93MlxE1AAQ5vFUSihYzSUjof-FOswtLxtgG2caRTIh2vF2PajarI_stG/pub?gid=822960724&single=true&output=csv';
+
+let stats = { ok: 0, skip: 0, error: 0 };
+
+function log(msg, type = 'ok') {
+  const el = document.getElementById('log');
+  el.style.display = 'block';
+  const div = document.createElement('div');
+  div.className = `log-item log-${type}`;
+  div.textContent = msg;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+async function startMigration() {
+  const btn = document.getElementById('btn-migrate');
+  btn.disabled = true;
+  btn.textContent = 'Migrando…';
+  stats = { ok: 0, skip: 0, error: 0 };
+
+  log('Buscando dados do Google Sheets…', 'info');
+
+  let rows;
+  try {
+    const res  = await fetch(CSV_URL + '&t=' + Date.now());
+    const text = await res.text();
+    rows = parseCSV(text);
+    log(`✓ ${rows.length} registros encontrados no Sheets.`, 'info');
+  } catch(e) {
+    log('✕ Erro ao buscar o CSV: ' + e.message, 'error');
+    btn.disabled = false; btn.textContent = '🚀 Tentar novamente';
+    return;
+  }
+
+  // Busca o que já existe no Supabase para não duplicar
+  log('Verificando registros existentes no Supabase…', 'info');
+  let existing = [];
+  try {
+    existing = await window.SB.sbSelect('confirmacoes') || [];
+  } catch(e) { /* tabela vazia, tudo bem */ }
+
+  const existingKeys = new Set(existing.map(r => `${r.grupo_id}||${r.nome}`));
+  log(`Supabase já tem ${existing.length} registros.`, 'info');
+
+  // Importa linha por linha
+  log('Iniciando importação…', 'info');
+  for (const row of rows) {
+    const key = `${row.grupoId}||${row.nome}`;
+    if (existingKeys.has(key)) {
+      log(`↷ Ignorado (já existe): ${row.nome}`, 'skip');
+      stats.skip++;
+      continue;
+    }
+    try {
+      await window.SB.sbInsert('confirmacoes', {
+        grupo_id:             row.grupoId,
+        nome:                 row.nome,
+        status:               row.status,
+        primeira_confirmacao: row.primeiraConf || new Date().toISOString(),
+        ultima_atualizacao:   row.ultimaAtt    || new Date().toISOString(),
+        editado:              row.editado === 'Sim'
+      });
+      log(`✓ Importado: ${row.nome} → ${row.status}`, 'ok');
+      stats.ok++;
+    } catch(e) {
+      log(`✕ Erro em ${row.nome}: ${e.message}`, 'error');
+      stats.error++;
+    }
+  }
+
+  // Resumo
+  document.getElementById('summary').style.display = 'block';
+  document.getElementById('summary').innerHTML =
+    `✅ Migração concluída!<br>
+     <strong>${stats.ok}</strong> importados &nbsp;·&nbsp;
+     <strong>${stats.skip}</strong> ignorados (já existiam) &nbsp;·&nbsp;
+     <strong>${stats.error}</strong> erros`;
+
+  btn.textContent = '✓ Concluído';
+  log('─── Migração finalizada ───', 'info');
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n').slice(1);
+  return lines.map(line => {
+    // Handle quoted commas
+    const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || line.split(',');
+    const clean = cols.map(c => c.replace(/^"|"$/g,'').trim());
+    return {
+      grupoId:      clean[0] || '',
+      nome:         clean[1] || '',
+      status:       clean[2] || 'Pendente',
+      primeiraConf: clean[3] || '',
+      ultimaAtt:    clean[4] || '',
+      editado:      clean[5] || 'Não'
+    };
+  }).filter(r => r.nome && r.grupoId);
+}
+</script>
+</body>
+</html>
