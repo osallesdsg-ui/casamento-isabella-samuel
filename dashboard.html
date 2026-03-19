@@ -1015,8 +1015,8 @@ function renderPresentes(reservadosIds = new Set(), reservas = []) {
         <div class="presente-titulo">${p.titulo}</div>
         ${p.descricao ? `<div class="presente-desc">${p.descricao}</div>` : ''}
         ${p.preco ? `<div class="presente-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>` : ''}
-        ${reserva ? `<div style="font-size:0.8rem;color:#16a34a;margin-top:6px">Por: ${reserva.nome || 'Anônimo'}</div>` : ''}
-        <div style="font-size:0.78rem;color:#9ca3af;margin-top:4px">Ordem: ${p.ordem ?? idx}</div>
+        ${reserva ? `<div style="font-size:0.85rem;color:#166534;margin-top:6px;font-weight:500">Por: ${reserva.nome || 'Anônimo'}</div>` : ''}
+        <div style="font-size:0.78rem;color:#6b7280;margin-top:4px">Ordem: ${p.ordem ?? idx}</div>
       </div>
       <div class="presente-footer">
         <button class="btn btn-ghost" style="flex:1" onclick="openPresenteModal('${p.id}')">✏️ Editar</button>
