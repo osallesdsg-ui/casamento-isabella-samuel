@@ -288,8 +288,28 @@ body { background: var(--dark); color: var(--cream); }
 }
 
 @media (max-width:480px) {
-  .info-grid { grid-template-columns:1fr; }
   .member-btns { flex-direction:column; }
+}
+
+/* Info row — força 3 colunas mesmo no mobile, sobrescreve styles.css */
+@media (max-width:560px) {
+  .info-row {
+    grid-template-columns: 1fr 1px 1fr 1px 1fr !important;
+  }
+  .info-row .divider-v {
+    display: block !important;
+  }
+  .info-item {
+    padding: 20px 8px !important;
+    border-bottom: none !important;
+  }
+  .info-item .info-value {
+    font-size: 1rem;
+  }
+  .info-item .tap-hint {
+    font-size: 0.38rem;
+    letter-spacing: 0.08em;
+  }
 }
 </style>
 </head>
@@ -546,15 +566,20 @@ function showTab(name, el) {
   if (el) el.classList.add('active');
 }
 
-/* Auto-detecta link personalizado ao carregar */
+/* Auto-detecta link personalizado ao carregar
+   Aguarda grupos do Supabase antes de iniciar RSVP */
 document.addEventListener('DOMContentLoaded', () => {
   const grupoParam = new URLSearchParams(location.search).get('g');
-  if (grupoParam) {
-    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-    document.getElementById('tab-rsvp').classList.add('active');
-    document.querySelectorAll('.hero-nav a').forEach(a => a.classList.remove('active'));
-    initRSVP();
-  }
+  if (!grupoParam) return;
+
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-rsvp').classList.add('active');
+  document.querySelectorAll('.hero-nav a').forEach(a => a.classList.remove('active'));
+
+  // Aguarda grupos carregarem do Supabase
+  window.addEventListener('grupos-loaded', () => initRSVP(), { once: true });
+  // Timeout de segurança: inicia mesmo se Supabase demorar
+  setTimeout(() => { if (!rsvpInited) initRSVP(); }, 3000);
 });
 
 /* ── COUNTDOWN ── */

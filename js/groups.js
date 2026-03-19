@@ -1,8 +1,10 @@
 /* ══════════════════════════════════════════════════════════════
-   GRUPOS — Isabella & Samuel · 07.11.2026
+   GRUPOS — Isabella & Samuel
+   Carrega do Supabase dinamicamente.
+   Grupos locais servem como fallback enquanto carrega.
    ══════════════════════════════════════════════════════════════ */
 
-const GRUPOS = {
+const GRUPOS_LOCAL = {
   "cerimonialistas":                    { label: "Cerimonialistas",                     membros: ["Chandde Ramos","Naide Ramos","Davi Ramos","Laura Ramos"] },
   "familia_noivo":                      { label: "Família do Noivo",                    membros: ["André Raimundo Batista","Mirian de Sales Batista","Paulo André Sales Batista"] },
   "familia_noiva":                      { label: "Família da Noiva",                    membros: ["Jarbas Clemente Firmino","Lenita de Paula Clemente","Matheus Clemente de Paula","Lucas de Paula Araújo","Leonor Francisca de Paula"] },
@@ -54,4 +56,38 @@ const GRUPOS = {
   "clevi_familia":                      { label: "Clevi Silva & Família",               membros: ["Clevi Silva da Luz","Rebeca Costa e Silva","Lorenzo Costa Carvalho"] }
 };
 
-window.GRUPOS = GRUPOS;
+/* GRUPOS é o objeto ativo — começa com o fallback local */
+window.GRUPOS = Object.assign({}, GRUPOS_LOCAL);
+
+/* Carrega do Supabase e mescla */
+(async function loadGruposFromSupabase() {
+  try {
+    const URL  = 'https://buqaljroqudziitboxdi.supabase.co';
+    const KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cWFsanJvcXVkemlpdGJveGRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NjIxNzksImV4cCI6MjA4OTQzODE3OX0.NarWn77hCoV1Q38s_vUakkJpw6ggpXWcwzCRKt9uYFw';
+    const h    = { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY };
+
+    const [gr, mr] = await Promise.all([
+      fetch(URL + '/rest/v1/grupos?select=id,label', { headers: h }),
+      fetch(URL + '/rest/v1/membros?select=grupo_id,nome&order=grupo_id,ordem', { headers: h })
+    ]);
+
+    const grupos  = await gr.json();
+    const membros = await mr.json();
+    if (!Array.isArray(grupos)) return;
+
+    const map = {};
+    membros.forEach(m => {
+      if (!map[m.grupo_id]) map[m.grupo_id] = [];
+      map[m.grupo_id].push(m.nome);
+    });
+
+    grupos.forEach(g => {
+      window.GRUPOS[g.id] = { label: g.label, membros: map[g.id] || [] };
+    });
+
+  } catch(e) {
+    console.warn('Grupos: usando fallback local.', e);
+  } finally {
+    window.dispatchEvent(new Event('grupos-loaded'));
+  }
+})();
