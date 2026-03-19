@@ -8,176 +8,310 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <style>
-body { background: #faf7f2; color: #1f2937; }
+:root {
+  --gold: #c9a84c; --gold-light: #e8d5a3; --gold-dark: #8a6e2f;
+  --olive-light: #6b7560; --cream: #faf7f2; --dark: #1a1610;
+}
+body { background: #f9f5f0; color: #1f2937; }
 
 /* ── HEADER ── */
 .page-header {
-  background: var(--dark);
-  padding: 40px 24px 36px;
-  text-align: center;
+  background: var(--dark); padding: 36px 24px 32px; text-align: center;
   position: relative;
-  overflow: hidden;
 }
 .page-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 1px;
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }
 .back-link {
   display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-display); font-size: 0.55rem;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--olive-light); margin-bottom: 20px;
+  font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--olive-light); margin-bottom: 18px;
   transition: color 0.2s;
 }
 .back-link:hover { color: var(--gold); }
 .page-title {
-  font-family: var(--font-serif); font-size: clamp(2rem,6vw,3rem);
-  font-style: italic; color: var(--gold-light); margin-bottom: 8px;
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(1.8rem,5vw,2.8rem);
+  font-style: italic; color: var(--gold-light); margin-bottom: 6px;
 }
 .page-sub {
-  font-family: var(--font-display); font-size: 0.6rem;
+  font-family: 'Cinzel', serif; font-size: 0.58rem;
   letter-spacing: 0.25em; text-transform: uppercase; color: var(--olive-light);
 }
-
-/* ── MESSAGE ── */
-.message-card {
-  max-width: 640px; margin: 32px auto; padding: 0 20px;
-  text-align: center;
+.page-note {
+  margin-top: 16px; font-family: 'EB Garamond', serif;
+  font-size: 1rem; color: rgba(255,255,255,0.4); font-style: italic;
 }
-.message-text {
-  font-family: var(--font-serif); font-size: 1.05rem;
-  color: #6b7280; line-height: 1.8; font-style: italic;
+
+/* ── STATUS BANNER ── */
+.status-banner {
+  display: none; padding: 16px 24px; text-align: center;
+  font-family: 'EB Garamond', serif; font-size: 1.05rem;
+}
+.status-banner.sucesso { background: #f0fdf4; color: #166534; border-bottom: 1px solid #bbf7d0; }
+.status-banner.erro    { background: #fef2f2; color: #991b1b; border-bottom: 1px solid #fecaca; }
+.status-banner.pendente{ background: #fefce8; color: #854d0e; border-bottom: 1px solid #fde68a; }
+
+/* ── FEED ── */
+.feed-container { max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; }
+.feed-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.feed-count {
+  font-family: 'Cinzel', serif; font-size: 0.55rem;
+  letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af;
+}
+.feed-filter { display: flex; gap: 8px; }
+.filter-pill {
+  padding: 6px 14px; border-radius: 20px; border: 1px solid #e5e7eb;
+  font-family: 'Cinzel', serif; font-size: 0.5rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: #6b7280; background: #fff; cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-pill.active, .filter-pill:hover {
+  border-color: var(--gold); color: var(--gold-dark); background: rgba(201,168,76,0.06);
 }
 
 /* ── GRID ── */
-.gifts-container {
-  max-width: 1100px; margin: 0 auto; padding: 0 20px 60px;
-}
 .gifts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 20px;
 }
 
-/* ── CARD ── */
+/* ── GIFT CARD ── */
 .gift-card {
-  background: #fff;
-  border: 1px solid #f0e9de;
-  border-radius: 3px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  background: #fff; border: 1px solid #f0e9de; border-radius: 3px;
+  overflow: hidden; cursor: pointer;
   transition: transform 0.25s, box-shadow 0.25s;
   display: flex; flex-direction: column;
+  position: relative;
 }
-.gift-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.1);
-}
-.gift-img {
-  width: 100%; height: 200px;
-  display: flex; align-items: center; justify-content: center;
-  background: #f9f5f0; font-size: 3rem; color: #d1c9bd;
-  overflow: hidden; flex-shrink: 0;
-}
-.gift-img img { width: 100%; height: 100%; object-fit: cover; }
+.gift-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
 
-.gift-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+/* Badge reservado */
+.gift-badge {
+  position: absolute; top: 12px; left: 12px; z-index: 2;
+  padding: 4px 10px; border-radius: 20px;
+  font-family: 'Cinzel', serif; font-size: 0.48rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.gift-badge.reservado { background: #166534; color: #fff; }
+.gift-badge.pendente  { background: #854d0e; color: #fff; }
+
+.gift-img {
+  width: 100%; height: 200px; overflow: hidden; position: relative;
+  background: #f9f5f0; display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; color: #d1c9bd; flex-shrink: 0;
+}
+.gift-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.4s;
+}
+.gift-card:hover .gift-img img { transform: scale(1.04); }
+
+/* Overlay reservado */
+.gift-img .overlay-reservado {
+  position: absolute; inset: 0;
+  background: rgba(10,8,5,0.5);
+  display: flex; align-items: center; justify-content: center;
+}
+.overlay-reservado span {
+  font-family: 'Cinzel', serif; font-size: 0.7rem;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: #fff; border: 1px solid rgba(255,255,255,0.5);
+  padding: 8px 16px; border-radius: 2px;
+}
+
+.gift-body { padding: 16px; flex: 1; }
 .gift-title {
-  font-family: var(--font-serif); font-size: 1.15rem;
-  color: #1f2937; margin-bottom: 6px;
+  font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+  color: #1f2937; margin-bottom: 4px; line-height: 1.3;
 }
 .gift-desc {
-  font-family: var(--font-body); font-size: 0.9rem;
-  color: #6b7280; line-height: 1.55; flex: 1; margin-bottom: 12px;
+  font-family: 'EB Garamond', serif; font-size: 0.9rem;
+  color: #6b7280; line-height: 1.5; margin-bottom: 10px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .gift-price {
-  font-family: var(--font-serif); font-size: 1.3rem;
-  color: var(--gold-dark); font-weight: 600; margin-bottom: 14px;
+  font-family: 'Cormorant Garamond', serif; font-size: 1.25rem;
+  color: var(--gold-dark); font-weight: 600;
 }
-
-/* PIX MODAL */
-.pix-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 12px; width: 100%;
+.gift-action {
+  padding: 12px 16px; border-top: 1px solid #f0e9de;
+}
+.gift-btn {
+  display: block; width: 100%; padding: 11px;
   background: linear-gradient(135deg, var(--gold-dark), var(--gold));
   color: #fff; border: none; border-radius: 2px;
-  font-family: var(--font-display); font-size: 0.62rem;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  cursor: pointer; transition: opacity 0.2s;
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.18em;
+  text-transform: uppercase; cursor: pointer; transition: opacity 0.2s;
 }
-.pix-btn:hover { opacity: 0.9; }
+.gift-btn:hover { opacity: 0.9; }
+.gift-btn.reservado {
+  background: #f3f4f6; color: #9ca3af; cursor: not-allowed;
+}
 
-/* PIX Modal */
-#pix-modal-overlay {
+/* ── POPUP PRESENTE ── */
+.popup-overlay {
   position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
-  display: flex; align-items: center; justify-content: center; padding: 20px;
-  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s;
 }
-#pix-modal-overlay.open { opacity: 1; pointer-events: all; }
-.pix-modal {
-  background: #fff; border-radius: 4px; padding: 36px;
-  width: 100%; max-width: 420px; text-align: center;
-  transform: translateY(16px); transition: transform 0.25s;
+.popup-overlay.open { opacity: 1; pointer-events: all; }
+
+.popup {
+  background: #fff; border-radius: 4px; width: 100%; max-width: 680px;
+  max-height: 92vh; overflow-y: auto;
+  transform: translateY(16px); transition: transform 0.3s; position: relative;
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 }
-#pix-modal-overlay.open .pix-modal { transform: translateY(0); }
-.pix-modal-title {
-  font-family: var(--font-serif); font-size: 1.5rem;
-  font-style: italic; color: var(--gold-dark); margin-bottom: 6px;
+.popup-overlay.open .popup { transform: translateY(0); }
+
+.popup-close {
+  position: absolute; top: 14px; right: 16px; z-index: 10;
+  background: rgba(255,255,255,0.9); border: none; cursor: pointer;
+  width: 32px; height: 32px; border-radius: 50%;
+  font-size: 1rem; color: #6b7280; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
 }
-.pix-modal-gift {
-  font-family: var(--font-display); font-size: 0.6rem;
-  letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af;
-  margin-bottom: 24px;
+.popup-close:hover { background: #f3f4f6; color: #1f2937; }
+
+/* Fotos do popup */
+.popup-gallery {
+  position: relative; height: 300px; background: #f9f5f0;
+  overflow: hidden;
 }
-.pix-key-box {
-  background: #f9f5f0; border: 1.5px solid #f0e9de; border-radius: 3px;
-  padding: 14px 16px; margin-bottom: 16px;
-  font-family: var(--font-serif); font-size: 1.1rem;
-  color: var(--dark); word-break: break-all;
+.gallery-main {
+  width: 100%; height: 100%; object-fit: cover;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem; color: #d1c9bd;
 }
-.pix-copy-btn {
-  width: 100%; padding: 12px;
+.gallery-main img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-thumbs {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px;
+}
+.gallery-thumb {
+  width: 44px; height: 44px; border-radius: 2px; overflow: hidden;
+  border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+.gallery-thumb.active { border-color: var(--gold); }
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.popup-content { padding: 24px 28px 28px; }
+.popup-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.6rem;
+  color: #1f2937; margin-bottom: 6px; line-height: 1.2;
+}
+.popup-price {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.8rem;
+  color: var(--gold-dark); font-weight: 600; margin-bottom: 14px;
+}
+.popup-desc {
+  font-family: 'EB Garamond', serif; font-size: 1rem;
+  color: #6b7280; line-height: 1.7; margin-bottom: 24px;
+}
+
+/* Reservado banner no popup */
+.popup-reservado {
+  display: none; padding: 14px 16px; background: #f0fdf4;
+  border: 1px solid #bbf7d0; border-radius: 3px; margin-bottom: 20px;
+}
+.popup-reservado p {
+  font-family: 'EB Garamond', serif; font-size: 1rem;
+  color: #166534; line-height: 1.5;
+}
+.popup-reservado strong { font-weight: 600; }
+
+/* Form de reserva */
+.reserve-form { display: flex; flex-direction: column; gap: 14px; }
+.reserve-form label {
+  font-family: 'Cinzel', serif; font-size: 0.55rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: #6b7280;
+  display: block; margin-bottom: 6px;
+}
+.reserve-form input, .reserve-form textarea {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid #e5e7eb; border-radius: 3px;
+  font-family: 'EB Garamond', serif; font-size: 1rem; color: #1f2937;
+  outline: none; transition: border-color 0.2s; background: #fff;
+}
+.reserve-form input:focus, .reserve-form textarea:focus { border-color: var(--gold); }
+.reserve-form textarea { resize: none; height: 80px; }
+.anon-label {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  font-family: 'EB Garamond', serif; font-size: 0.95rem; color: #6b7280;
+}
+
+.reserve-btn {
+  width: 100%; padding: 14px;
   background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-  color: #fff; border: none; border-radius: 2px;
-  font-family: var(--font-display); font-size: 0.62rem;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  cursor: pointer; margin-bottom: 12px; transition: opacity 0.2s;
+  color: #fff; border: none; border-radius: 3px;
+  font-family: 'Cinzel', serif; font-size: 0.65rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  cursor: pointer; transition: opacity 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
 }
-.pix-copy-btn:hover { opacity: 0.9; }
-.pix-close-btn {
-  background: none; border: none;
-  font-family: var(--font-display); font-size: 0.58rem;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  color: #9ca3af; cursor: pointer; transition: color 0.2s;
+.reserve-btn:hover { opacity: 0.9; }
+.reserve-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.reserve-btn .spinner-sm {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+  animation: spin 0.8s linear infinite; display: none;
 }
-.pix-close-btn:hover { color: #374151; }
-.pix-note {
-  font-family: var(--font-serif); font-size: 0.9rem;
-  color: #9ca3af; font-style: italic; margin-bottom: 16px;
-  line-height: 1.5;
+.reserve-btn.loading .spinner-sm { display: block; }
+.reserve-btn.loading span { display: none; }
+
+.mp-note {
+  text-align: center; font-family: 'EB Garamond', serif;
+  font-size: 0.85rem; color: #9ca3af; font-style: italic;
+  margin-top: 8px;
 }
 
-/* Loading / empty */
-.gifts-loading {
-  grid-column: 1 / -1; text-align: center; padding: 60px;
-  color: #9ca3af; font-family: var(--font-serif);
-  font-size: 1.05rem; font-style: italic;
+/* ── EMPTY STATE ── */
+.empty-state {
+  grid-column: 1/-1; text-align: center; padding: 60px 20px;
+  color: #9ca3af; font-family: 'EB Garamond', serif;
+  font-size: 1.1rem; font-style: italic;
 }
 
-/* FOOTER */
+/* ── FOOTER ── */
 .site-footer {
   background: var(--dark); padding: 32px 20px; text-align: center;
   border-top: 1px solid rgba(201,168,76,0.1);
 }
 .site-footer small {
-  font-family: var(--font-display); font-size: 0.55rem;
-  letter-spacing: 0.2em; color: var(--olive-light); opacity: 0.5;
-  text-transform: uppercase;
+  font-family: 'Cinzel', serif; font-size: 0.55rem;
+  letter-spacing: 0.2em; color: var(--olive-light); opacity: 0.5; text-transform: uppercase;
+}
+
+/* ── LOADING SKELETON ── */
+.skeleton {
+  background: linear-gradient(90deg, #f0e9de 25%, #faf7f2 50%, #f0e9de 75%);
+  background-size: 200% 100%; animation: shimmer 1.5s infinite;
+  border-radius: 3px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background: #fff; border: 1px solid #f0e9de; border-radius: 3px; overflow: hidden; }
+.skeleton-img  { height: 200px; }
+.skeleton-body { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.skeleton-line { height: 14px; }
+.skeleton-line.short { width: 60%; }
+.skeleton-line.price { height: 20px; width: 40%; margin-top: 4px; }
+
+@media (max-width: 600px) {
+  .gifts-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .gift-img { height: 150px; }
+  .popup-gallery { height: 220px; }
+  .popup-content { padding: 18px 20px 24px; }
+}
+@media (max-width: 380px) {
+  .gifts-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -188,33 +322,86 @@ body { background: #faf7f2; color: #1f2937; }
   <a class="back-link" href="index.html">← voltar ao convite</a>
   <h1 class="page-title">Lista de Presentes</h1>
   <p class="page-sub">Isabella &amp; Samuel · 07.11.2026</p>
+  <p class="page-note">Sua presença é o nosso maior presente. Mas se quiser nos presentear, escolha algo abaixo com muito carinho. 💛</p>
 </header>
 
-<!-- ══ MESSAGE ═══════════════════════════════════════════════════ -->
-<div class="message-card">
-  <p class="message-text">
-    A sua presença já é o nosso maior presente. Mas se quiser nos presentear com algo especial,
-    selecionamos alguns itens que tornariam nossa nova casa ainda mais especial. 💛
-  </p>
-</div>
+<!-- ══ STATUS BANNER ══════════════════════════════════════════════ -->
+<div class="status-banner" id="status-banner"></div>
 
-<!-- ══ GIFTS ═════════════════════════════════════════════════════ -->
-<div class="gifts-container">
+<!-- ══ FEED ══════════════════════════════════════════════════════ -->
+<div class="feed-container">
+  <div class="feed-header">
+    <span class="feed-count" id="feed-count"></span>
+    <div class="feed-filter">
+      <button class="filter-pill active" data-filter="todos" onclick="setFilter(this)">Todos</button>
+      <button class="filter-pill" data-filter="disponivel" onclick="setFilter(this)">Disponíveis</button>
+      <button class="filter-pill" data-filter="reservado" onclick="setFilter(this)">Reservados</button>
+    </div>
+  </div>
+
   <div class="gifts-grid" id="gifts-grid">
-    <div class="gifts-loading">Carregando lista de presentes…</div>
+    <!-- Skeletons enquanto carrega -->
+    ${[1,2,3,4,5,6].map(() => `
+    <div class="skeleton-card">
+      <div class="skeleton skeleton-img"></div>
+      <div class="skeleton-body">
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line short"></div>
+        <div class="skeleton skeleton-line price"></div>
+      </div>
+    </div>`).join('')}
   </div>
 </div>
 
-<!-- ══ PIX MODAL ═════════════════════════════════════════════════ -->
-<div id="pix-modal-overlay" onclick="closePix(event)">
-  <div class="pix-modal">
-    <div class="pix-modal-title">Presentear com PIX</div>
-    <div class="pix-modal-gift" id="pix-gift-name"></div>
-    <p class="pix-note">Copie a chave PIX abaixo e realize o pagamento pelo seu banco.</p>
-    <div class="pix-key-box" id="pix-key-display"></div>
-    <button class="pix-copy-btn" onclick="copyPix()">📋 Copiar chave PIX</button>
-    <br>
-    <button class="pix-close-btn" onclick="closePix()">Fechar</button>
+<!-- ══ POPUP PRESENTE ═════════════════════════════════════════════ -->
+<div class="popup-overlay" id="popup-overlay" onclick="handleOverlayClick(event)">
+  <div class="popup" id="popup">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+
+    <!-- Galeria -->
+    <div class="popup-gallery" id="popup-gallery">
+      <div class="gallery-main" id="gallery-main">🎁</div>
+      <div class="gallery-thumbs" id="gallery-thumbs"></div>
+    </div>
+
+    <div class="popup-content">
+      <div class="popup-title" id="popup-title"></div>
+      <div class="popup-price" id="popup-price"></div>
+      <div class="popup-desc"  id="popup-desc"></div>
+
+      <!-- Banner quando já reservado -->
+      <div class="popup-reservado" id="popup-reservado">
+        <p>💚 Este presente já foi reservado por <strong id="reservado-por"></strong>. Obrigados pelo carinho!</p>
+      </div>
+
+      <!-- Form de reserva -->
+      <div class="reserve-form" id="reserve-form">
+        <div id="anon-section">
+          <label class="anon-label">
+            <input type="checkbox" id="check-anon" onchange="toggleAnon(this)">
+            Quero presentear anonimamente
+          </label>
+        </div>
+
+        <div id="name-section">
+          <div class="form-group">
+            <label>Seu nome</label>
+            <input type="text" id="input-nome" placeholder="Como quer ser identificado(a)">
+          </div>
+          <div class="form-group">
+            <label>Mensagem para os noivos (opcional)</label>
+            <textarea id="input-mensagem" placeholder="Deixe uma mensagem especial…"></textarea>
+          </div>
+        </div>
+
+        <button class="reserve-btn" id="reserve-btn" onclick="reservarPresente()">
+          <div class="spinner-sm"></div>
+          <span>💛 Reservar e pagar</span>
+        </button>
+        <p class="mp-note">Você será redirecionado(a) ao Mercado Pago para concluir o pagamento com PIX, cartão ou boleto.</p>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -226,65 +413,242 @@ body { background: #faf7f2; color: #1f2937; }
 <!-- ══ SCRIPTS ═══════════════════════════════════════════════════ -->
 <script src="js/supabase.js"></script>
 <script>
-let currentPix = '';
+const EDGE_URL = 'https://buqaljroqudziitboxdi.supabase.co/functions/v1/mp-create-preference';
 
-async function loadGifts() {
+let allPresentes = [];
+let allReservas  = {};
+let currentPresente = null;
+let currentFilter = 'todos';
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  checkStatusParam();
+  loadPresentes();
+});
+
+/* ── STATUS DA URL ── */
+function checkStatusParam() {
+  const params = new URLSearchParams(location.search);
+  const status = params.get('status');
+  const banner = document.getElementById('status-banner');
+  if (!status) return;
+
+  const msgs = {
+    sucesso:  '💚 Obrigados! Seu presente foi confirmado e reservado com sucesso!',
+    erro:     '❌ Houve um problema no pagamento. Tente novamente.',
+    pendente: '⏳ Pagamento pendente. Assim que confirmado, o presente será marcado como reservado.'
+  };
+
+  if (msgs[status]) {
+    banner.textContent = msgs[status];
+    banner.className = `status-banner ${status}`;
+    banner.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+/* ── LOAD PRESENTES ── */
+async function loadPresentes() {
   try {
     const { sbSelect } = window.SB;
-    const presentes = await sbSelect('presentes', 'order=ordem.asc') || [];
-    const grid = document.getElementById('gifts-grid');
+    const [presentes, reservas] = await Promise.all([
+      sbSelect('presentes', 'order=ordem.asc'),
+      sbSelect('reservas', 'status=eq.pago')
+    ]);
 
-    if (!presentes.length) {
-      grid.innerHTML = '<div class="gifts-loading">Nenhum presente cadastrado ainda.</div>';
-      return;
-    }
+    allPresentes = presentes || [];
+    allReservas  = {};
+    (reservas || []).forEach(r => { allReservas[r.presente_id] = r; });
 
-    grid.innerHTML = presentes.map(p => `
-      <div class="gift-card">
-        <div class="gift-img">
-          ${p.imagem_url
-            ? `<img src="${p.imagem_url}" alt="${p.titulo}" onerror="this.parentElement.innerHTML='🎁'">`
-            : '🎁'}
-        </div>
-        <div class="gift-body">
-          <div class="gift-title">${p.titulo}</div>
-          ${p.descricao ? `<div class="gift-desc">${p.descricao}</div>` : '<div class="gift-desc"></div>'}
-          ${p.preco ? `<div class="gift-price">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>` : ''}
-          ${p.chave_pix
-            ? `<button class="pix-btn" onclick="openPix('${p.titulo.replace(/'/g,"\\'")}','${p.chave_pix}')">
-                💛 Presentear com PIX
-               </button>`
-            : ''}
-        </div>
-      </div>`).join('');
+    renderGrid();
   } catch(e) {
     document.getElementById('gifts-grid').innerHTML =
-      '<div class="gifts-loading">Erro ao carregar presentes. Tente novamente.</div>';
+      '<div class="empty-state">Erro ao carregar. Tente novamente.</div>';
   }
 }
 
-function openPix(nome, chave) {
-  currentPix = chave;
-  document.getElementById('pix-gift-name').textContent = nome;
-  document.getElementById('pix-key-display').textContent = chave;
-  document.getElementById('pix-modal-overlay').classList.add('open');
-}
-
-function closePix(e) {
-  if (!e || e.target === document.getElementById('pix-modal-overlay')) {
-    document.getElementById('pix-modal-overlay').classList.remove('open');
-  }
-}
-
-function copyPix() {
-  navigator.clipboard.writeText(currentPix).then(() => {
-    const btn = document.querySelector('.pix-copy-btn');
-    btn.textContent = '✓ Copiado!';
-    setTimeout(() => btn.textContent = '📋 Copiar chave PIX', 2000);
+/* ── RENDER GRID ── */
+function renderGrid() {
+  const grid = document.getElementById('gifts-grid');
+  const filtered = allPresentes.filter(p => {
+    if (currentFilter === 'disponivel') return !allReservas[p.id];
+    if (currentFilter === 'reservado')  return  allReservas[p.id];
+    return true;
   });
+
+  document.getElementById('feed-count').textContent =
+    `${filtered.length} ${filtered.length === 1 ? 'presente' : 'presentes'}`;
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state">Nenhum presente encontrado.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => {
+    const reserva  = allReservas[p.id];
+    const reservado = !!reserva;
+    const imagens  = [p.imagem_url, ...(p.imagens || [])].filter(Boolean);
+    const imgHtml  = imagens[0]
+      ? `<img src="${imagens[0]}" alt="${p.titulo}" onerror="this.style.display='none'">`
+      : '🎁';
+
+    return `
+    <div class="gift-card" onclick="openPopup('${p.id}')">
+      ${reservado ? `<div class="gift-badge reservado">Reservado ✓</div>` : ''}
+      <div class="gift-img">
+        ${imgHtml}
+        ${reservado ? `<div class="overlay-reservado"><span>Reservado</span></div>` : ''}
+      </div>
+      <div class="gift-body">
+        <div class="gift-title">${p.titulo}</div>
+        ${p.descricao ? `<div class="gift-desc">${p.descricao}</div>` : ''}
+        ${p.preco ? `<div class="gift-price">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>` : ''}
+      </div>
+      <div class="gift-action">
+        <button class="gift-btn ${reservado ? 'reservado' : ''}" onclick="event.stopPropagation(); openPopup('${p.id}')">
+          ${reservado ? '✓ Reservado' : '💛 Reservar Presente'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-loadGifts();
+/* ── FILTER ── */
+function setFilter(btn) {
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  renderGrid();
+}
+
+/* ── POPUP ── */
+function openPopup(id) {
+  const p = allPresentes.find(x => x.id === id);
+  if (!p) return;
+  currentPresente = p;
+
+  const reserva   = allReservas[id];
+  const reservado = !!reserva;
+  const imagens   = [p.imagem_url, ...(p.imagens || [])].filter(Boolean);
+
+  // Título e preço
+  document.getElementById('popup-title').textContent = p.titulo;
+  document.getElementById('popup-price').textContent = p.preco
+    ? `R$ ${Number(p.preco).toFixed(2).replace('.',',')}` : '';
+  document.getElementById('popup-desc').textContent = p.descricao || '';
+
+  // Galeria
+  const main   = document.getElementById('gallery-main');
+  const thumbs = document.getElementById('gallery-thumbs');
+  if (imagens.length) {
+    main.innerHTML = `<img src="${imagens[0]}" alt="${p.titulo}" onerror="this.parentElement.innerHTML='🎁'">`;
+    thumbs.innerHTML = imagens.length > 1
+      ? imagens.map((img, i) => `
+        <div class="gallery-thumb ${i===0?'active':''}" onclick="switchPhoto('${img}', this)">
+          <img src="${img}" alt="" onerror="this.parentElement.style.display='none'">
+        </div>`).join('')
+      : '';
+  } else {
+    main.innerHTML = '🎁';
+    thumbs.innerHTML = '';
+  }
+
+  // Estado reservado
+  const bannerEl = document.getElementById('popup-reservado');
+  const formEl   = document.getElementById('reserve-form');
+  if (reservado) {
+    document.getElementById('reservado-por').textContent = reserva.nome || 'alguém especial';
+    bannerEl.style.display = 'block';
+    formEl.style.display   = 'none';
+  } else {
+    bannerEl.style.display = 'none';
+    formEl.style.display   = 'flex';
+    document.getElementById('input-nome').value      = '';
+    document.getElementById('input-mensagem').value  = '';
+    document.getElementById('check-anon').checked    = false;
+    document.getElementById('name-section').style.display = 'flex';
+    resetBtn();
+  }
+
+  document.getElementById('popup-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('popup-overlay')) closePopup();
+}
+
+function switchPhoto(src, thumb) {
+  document.getElementById('gallery-main').innerHTML =
+    `<img src="${src}" alt="" onerror="this.parentElement.innerHTML='🎁'">`;
+  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function toggleAnon(cb) {
+  document.getElementById('name-section').style.display = cb.checked ? 'none' : 'flex';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePopup();
+});
+
+/* ── RESERVAR ── */
+async function reservarPresente() {
+  if (!currentPresente) return;
+
+  const anon  = document.getElementById('check-anon').checked;
+  const nome  = anon ? null : document.getElementById('input-nome').value.trim();
+  const msg   = document.getElementById('input-mensagem').value.trim();
+
+  const btn = document.getElementById('reserve-btn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        presente_id: currentPresente.id,
+        nome: nome || null,
+        mensagem: msg || null
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      if (data.error.includes('reservado')) {
+        alert('Este presente acabou de ser reservado por outra pessoa! Por favor escolha outro.');
+        closePopup();
+        loadPresentes();
+        return;
+      }
+      throw new Error(data.error);
+    }
+
+    // Redireciona para o Mercado Pago
+    window.location.href = data.init_point;
+
+  } catch(e) {
+    alert('Erro ao processar. Tente novamente.');
+    console.error(e);
+    resetBtn();
+  }
+}
+
+function resetBtn() {
+  const btn = document.getElementById('reserve-btn');
+  btn.disabled = false;
+  btn.classList.remove('loading');
+}
 </script>
+
 </body>
 </html>

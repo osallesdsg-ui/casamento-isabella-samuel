@@ -487,16 +487,53 @@ body { background:#f9f5f0; color:#1f2937; }
         <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
           <div>
             <div class="page-title">Lista de Presentes</div>
-            <div class="page-sub">Itens exibidos no site para os convidados</div>
+            <div class="page-sub">Itens exibidos no site · <span id="reservas-count" style="color:var(--gold-dark)"></span></div>
           </div>
           <button class="btn btn-gold" onclick="openPresenteModal()">
             + Adicionar Presente
           </button>
         </div>
 
+        <!-- Stats reservas -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-number" id="stat-total-presentes" style="color:var(--gold-dark)">—</div>
+            <div class="stat-label">presentes</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-number" id="stat-reservados" style="color:#16a34a">—</div>
+            <div class="stat-label">reservados</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-number" id="stat-valor-total" style="color:var(--gold-dark);font-size:1.4rem">—</div>
+            <div class="stat-label">arrecadado</div>
+          </div>
+        </div>
+
         <div id="presentes-grid" class="presentes-grid">
           <div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3af;font-style:italic">
             Carregando presentes…
+          </div>
+        </div>
+
+        <!-- Tabela de reservas -->
+        <div style="margin-top:32px">
+          <div style="font-family:var(--font-display);font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:#6b7280;margin-bottom:12px">
+            Reservas recebidas
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Presente</th>
+                <th>Quem reservou</th>
+                <th>Mensagem</th>
+                <th>Valor</th>
+                <th>Data</th>
+              </tr></thead>
+              <tbody id="reservas-tbody">
+                <tr><td colspan="5" style="text-align:center;color:#9ca3af;font-style:italic;padding:24px">Carregando…</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -542,7 +579,7 @@ body { background:#f9f5f0; color:#1f2937; }
 
 <!-- ══ MODAL: PRESENTE ══════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-presente">
-  <div class="modal">
+  <div class="modal" style="max-width:560px">
     <div class="modal-header">
       <div class="modal-title" id="modal-presente-title">Novo Presente</div>
       <button class="modal-close" onclick="closeModal('modal-presente')">✕</button>
@@ -561,13 +598,23 @@ body { background:#f9f5f0; color:#1f2937; }
         <input class="form-input" id="presente-preco" type="number" step="0.01" placeholder="299.90">
       </div>
       <div class="form-group">
-        <label class="form-label">URL da Imagem</label>
+        <label class="form-label">Foto principal (URL)</label>
         <input class="form-input" id="presente-imagem" placeholder="https://...">
-        <small style="color:#9ca3af;font-size:0.82rem;margin-top:2px">Cole o link da imagem do produto</small>
+        <small style="color:#9ca3af;font-size:0.82rem;margin-top:4px">Cole o link da imagem principal do produto</small>
       </div>
       <div class="form-group">
-        <label class="form-label">Chave PIX</label>
-        <input class="form-input" id="presente-pix" placeholder="seu@email.com ou CPF">
+        <label class="form-label">Fotos adicionais (até 4 links)</label>
+        <div id="imagens-extras" style="display:flex;flex-direction:column;gap:8px">
+          <input class="form-input" placeholder="https://... (foto 2)">
+          <input class="form-input" placeholder="https://... (foto 3)">
+          <input class="form-input" placeholder="https://... (foto 4)">
+          <input class="form-input" placeholder="https://... (foto 5)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ordem de exibição</label>
+        <input class="form-input" id="presente-ordem" type="number" min="0" placeholder="0" value="0">
+        <small style="color:#9ca3af;font-size:0.82rem;margin-top:4px">Número menor aparece primeiro</small>
       </div>
       <input type="hidden" id="presente-id">
       <button class="btn btn-gold" style="width:100%" onclick="savePresente()">
@@ -928,19 +975,39 @@ let editingPresenteId = null;
 
 async function loadPresentes() {
   try {
-    allPresentes = await sbSelect('presentes', 'order=ordem.asc') || [];
-    renderPresentes();
-  } catch(e) { toast('Erro ao carregar presentes', 'error'); }
+    const [presentes, reservas] = await Promise.all([
+      sbSelect('presentes', 'order=ordem.asc'),
+      sbSelect('reservas', 'status=eq.pago')
+    ]);
+    allPresentes = presentes || [];
+    const allReservasArr = reservas || [];
+
+    // Stats
+    const reservadosIds = new Set(allReservasArr.map(r => r.presente_id));
+    const totalReservados = allReservasArr.length;
+    const valorTotal = allReservasArr.reduce((a, r) => a + (Number(r.valor) || 0), 0);
+
+    setText('stat-total-presentes', allPresentes.length);
+    setText('stat-reservados', totalReservados);
+    setText('stat-valor-total', 'R$ ' + valorTotal.toFixed(2).replace('.',','));
+
+    renderPresentes(reservadosIds, allReservasArr);
+    renderReservas(allReservasArr);
+  } catch(e) { toast('Erro ao carregar presentes', 'error'); console.error(e); }
 }
 
-function renderPresentes() {
+function renderPresentes(reservadosIds = new Set(), reservas = []) {
   const grid = document.getElementById('presentes-grid');
   if (!allPresentes.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#9ca3af;font-style:italic">Nenhum presente cadastrado ainda.<br>Clique em "+ Adicionar Presente" para começar.</div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#9ca3af;font-style:italic">Nenhum presente ainda. Clique em "+ Adicionar Presente".</div>';
     return;
   }
-  grid.innerHTML = allPresentes.map(p => `
-    <div class="presente-card">
+  grid.innerHTML = allPresentes.map((p, idx) => {
+    const reservado = reservadosIds.has(p.id);
+    const reserva   = reservas.find(r => r.presente_id === p.id);
+    return `
+    <div class="presente-card" style="position:relative">
+      ${reservado ? '<div style="position:absolute;top:8px;left:8px;background:#16a34a;color:#fff;padding:3px 10px;border-radius:20px;font-family:var(--font-display);font-size:0.48rem;letter-spacing:0.12em;text-transform:uppercase;z-index:2">Reservado ✓</div>' : ''}
       <div class="presente-img">
         ${p.imagem_url ? `<img src="${p.imagem_url}" alt="${p.titulo}" onerror="this.parentElement.innerHTML='🎁'">` : '🎁'}
       </div>
@@ -948,18 +1015,41 @@ function renderPresentes() {
         <div class="presente-titulo">${p.titulo}</div>
         ${p.descricao ? `<div class="presente-desc">${p.descricao}</div>` : ''}
         ${p.preco ? `<div class="presente-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>` : ''}
-        ${p.chave_pix ? `<div class="td-muted" style="font-size:0.82rem;margin-top:6px">PIX: ${p.chave_pix}</div>` : ''}
+        ${reserva ? `<div style="font-size:0.8rem;color:#16a34a;margin-top:6px">Por: ${reserva.nome || 'Anônimo'}</div>` : ''}
+        <div style="font-size:0.78rem;color:#9ca3af;margin-top:4px">Ordem: ${p.ordem ?? idx}</div>
       </div>
       <div class="presente-footer">
         <button class="btn btn-ghost" style="flex:1" onclick="openPresenteModal('${p.id}')">✏️ Editar</button>
-        <button class="btn btn-danger" style="flex:1" onclick="deletePresente('${p.id}')">🗑 Remover</button>
+        <button class="btn btn-danger" style="flex:1" onclick="deletePresente('${p.id}')">🗑</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+function renderReservas(reservas) {
+  const tbody = document.getElementById('reservas-tbody');
+  if (!tbody) return;
+  if (!reservas.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#9ca3af;font-style:italic;padding:24px">Nenhuma reserva ainda.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = reservas.map(r => {
+    const p = allPresentes.find(x => x.id === r.presente_id);
+    return `<tr>
+      <td style="font-family:var(--font-serif)">${p?.titulo || '—'}</td>
+      <td>${r.nome || '<span style="color:#9ca3af">Anônimo</span>'}</td>
+      <td class="td-muted">${r.mensagem || '—'}</td>
+      <td>R$ ${Number(r.valor||0).toFixed(2).replace('.',',')}</td>
+      <td class="td-muted">${r.pago_em ? new Date(r.pago_em).toLocaleDateString('pt-BR') : '—'}</td>
+    </tr>`;
+  }).join('');
 }
 
 function openPresenteModal(id = null) {
   editingPresenteId = id;
   document.getElementById('modal-presente-title').textContent = id ? 'Editar Presente' : 'Novo Presente';
+  const extrasInputs = document.querySelectorAll('#imagens-extras input');
+
   if (id) {
     const p = allPresentes.find(x => x.id === id);
     if (p) {
@@ -967,24 +1057,34 @@ function openPresenteModal(id = null) {
       document.getElementById('presente-descricao').value = p.descricao || '';
       document.getElementById('presente-preco').value     = p.preco || '';
       document.getElementById('presente-imagem').value    = p.imagem_url || '';
-      document.getElementById('presente-pix').value       = p.chave_pix || '';
+      document.getElementById('presente-ordem').value     = p.ordem ?? 0;
       document.getElementById('presente-id').value        = p.id;
+      const extras = p.imagens || [];
+      extrasInputs.forEach((inp, i) => inp.value = extras[i] || '');
     }
   } else {
-    ['titulo','descricao','preco','imagem','pix'].forEach(f =>
-      document.getElementById('presente-' + f).value = '');
-    document.getElementById('presente-id').value = '';
+    document.getElementById('presente-titulo').value    = '';
+    document.getElementById('presente-descricao').value = '';
+    document.getElementById('presente-preco').value     = '';
+    document.getElementById('presente-imagem').value    = '';
+    document.getElementById('presente-ordem').value     = allPresentes.length;
+    document.getElementById('presente-id').value        = '';
+    extrasInputs.forEach(inp => inp.value = '');
   }
   openModal('modal-presente');
 }
 
 async function savePresente() {
+  const extrasInputs = document.querySelectorAll('#imagens-extras input');
+  const imagens = [...extrasInputs].map(i => i.value.trim()).filter(Boolean);
+
   const data = {
-    titulo:      document.getElementById('presente-titulo').value.trim(),
-    descricao:   document.getElementById('presente-descricao').value.trim(),
-    preco:       parseFloat(document.getElementById('presente-preco').value) || null,
-    imagem_url:  document.getElementById('presente-imagem').value.trim(),
-    chave_pix:   document.getElementById('presente-pix').value.trim(),
+    titulo:     document.getElementById('presente-titulo').value.trim(),
+    descricao:  document.getElementById('presente-descricao').value.trim(),
+    preco:      parseFloat(document.getElementById('presente-preco').value) || null,
+    imagem_url: document.getElementById('presente-imagem').value.trim(),
+    imagens,
+    ordem:      parseInt(document.getElementById('presente-ordem').value) || 0,
   };
   if (!data.titulo) { toast('Título é obrigatório', 'error'); return; }
 
@@ -993,7 +1093,6 @@ async function savePresente() {
       await sbUpdate('presentes', `id=eq.${editingPresenteId}`, data);
       toast('Presente atualizado! ✓');
     } else {
-      data.ordem = allPresentes.length;
       await sbInsert('presentes', data);
       toast('Presente adicionado! ✓');
     }
@@ -1003,8 +1102,9 @@ async function savePresente() {
 }
 
 async function deletePresente(id) {
-  if (!confirm('Remover este presente?')) return;
+  if (!confirm('Remover este presente? As reservas associadas também serão removidas.')) return;
   try {
+    await sbDelete('reservas', `presente_id=eq.${id}`);
     await sbDelete('presentes', `id=eq.${id}`);
     toast('Presente removido');
     loadPresentes();
