@@ -538,6 +538,137 @@ body { background:#f9f5f0; color:#1f2937; }
         </div>
       </section>
 
+      <!-- ── CONFIGURAÇÕES ── -->
+      <section class="section" id="section-config">
+        <div class="page-header">
+          <div class="page-title">Configurações</div>
+          <div class="page-sub">Prazos de confirmação de presença</div>
+        </div>
+
+        <!-- Rodada ativa -->
+        <div class="card" style="padding:24px;margin-bottom:24px">
+          <div style="font-family:var(--font-display);font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:#6b7280;margin-bottom:16px">Rodada ativa</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn" id="btn-rodada-1" onclick="setRodada('1')" style="flex:1">Rodada 1</button>
+            <button class="btn" id="btn-rodada-2" onclick="setRodada('2')" style="flex:1">Rodada 2</button>
+            <button class="btn" id="btn-rodada-3" onclick="setRodada('3')" style="flex:1">Rodada 3</button>
+          </div>
+          <div style="margin-top:12px;font-family:var(--font-serif);font-size:0.95rem;color:#6b7280">
+            Rodada ativa: <strong id="rodada-ativa-label" style="color:var(--gold-dark)">—</strong>
+          </div>
+        </div>
+
+        <!-- Prazos -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+
+          <div class="card" style="padding:24px">
+            <div style="font-family:var(--font-display);font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:4px">Rodada 1</div>
+            <div class="td-muted" style="font-size:0.85rem;margin-bottom:14px">Primeira rodada de confirmações</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">Data e horário</label>
+              <input class="form-input" type="datetime-local" id="prazo-1">
+            </div>
+            <div id="prazo-1-display" style="font-family:var(--font-serif);font-size:0.9rem;color:#6b7280;margin-bottom:12px;font-style:italic"></div>
+            <button class="btn btn-gold" style="width:100%" onclick="savePrazo('1')">Salvar Rodada 1</button>
+          </div>
+
+          <div class="card" style="padding:24px">
+            <div style="font-family:var(--font-display);font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:4px">Rodada 2</div>
+            <div class="td-muted" style="font-size:0.85rem;margin-bottom:14px">Segunda rodada de confirmações</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">Data e horário</label>
+              <input class="form-input" type="datetime-local" id="prazo-2">
+            </div>
+            <div id="prazo-2-display" style="font-family:var(--font-serif);font-size:0.9rem;color:#6b7280;margin-bottom:12px;font-style:italic"></div>
+            <button class="btn btn-gold" style="width:100%" onclick="savePrazo('2')">Salvar Rodada 2</button>
+          </div>
+
+          <div class="card" style="padding:24px">
+            <div style="font-family:var(--font-display);font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:4px">Rodada 3</div>
+            <div class="td-muted" style="font-size:0.85rem;margin-bottom:14px">Terceira e última rodada</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">Data e horário</label>
+              <input class="form-input" type="datetime-local" id="prazo-3">
+            </div>
+            <div id="prazo-3-display" style="font-family:var(--font-serif);font-size:0.9rem;color:#6b7280;margin-bottom:12px;font-style:italic"></div>
+            <button class="btn btn-gold" style="width:100%" onclick="savePrazo('3')">Salvar Rodada 3</button>
+          </div>
+
+        </div>
+
+        <!-- Preview -->
+        <div class="card" style="padding:24px;margin-top:16px;background:#faf7f2">
+          <div style="font-family:var(--font-display);font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#9ca3af;margin-bottom:10px">Preview — como aparece no site</div>
+          <div style="font-family:var(--font-serif);font-size:1rem;color:#374151;line-height:1.7">
+            Você pode voltar e editar até <strong id="preview-prazo" style="color:var(--gold-dark)">—</strong>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── CONFIGURAÇÕES ── -->
+      <section class="section" id="section-config">
+        <div class="page-header">
+          <div class="page-title">Configurações</div>
+          <div class="page-sub">Prazos de confirmação de presença</div>
+        </div>
+
+        <!-- Rodada ativa -->
+        <div class="card" style="padding:24px;margin-bottom:24px">
+          <div style="font-family:var(--font-display);font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:#6b7280;margin-bottom:16px">Rodada ativa</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn" id="btn-rodada-1" onclick="setRodada('1')" style="flex:1">Rodada 1</button>
+            <button class="btn" id="btn-rodada-2" onclick="setRodada('2')" style="flex:1">Rodada 2</button>
+            <button class="btn" id="btn-rodada-3" onclick="setRodada('3')" style="flex:1">Rodada 3</button>
+          </div>
+          <div style="margin-top:12px;font-family:var(--font-serif);font-size:0.95rem;color:#374151">
+            Rodada ativa: <strong id="rodada-ativa-label" style="color:var(--gold-dark)">—</strong>
+          </div>
+        </div>
+
+        <!-- Prazos -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+          <div class="card" style="padding:24px">
+            <div style="font-family:var(--font-display);font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:4px">Rodada 1</div>
+            <div style="font-size:0.85rem;color:#6b7280;margin-bottom:14px">Primeira rodada de confirmações</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">Data e horário</label>
+              <input class="form-input" type="datetime-local" id="prazo-1">
+            </div>
+            <div id="prazo-1-display" style="font-family:var(--font-serif);font-size:0.9rem;color:#6b7280;margin-bottom:12px;font-style:italic"></div>
+            <button class="btn btn-gold" style="width:100%" onclick="savePrazo('1')">Salvar Rodada 1</button>
+          </div>
+          <div class="card" style="padding:24px">
+            <div style="font-family:var(--font-display);font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:4px">Rodada 2</div>
+            <div style="font-size:0.85rem;color:#6b7280;margin-bottom:14px">Segunda rodada de confirmações</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">Data e horário</label>
+              <input class="form-input" type="datetime-local" id="prazo-2">
+            </div>
+            <div id="prazo-2-display" style="font-family:var(--font-serif);font-size:0.9rem;color:#6b7280;margin-bottom:12px;font-style:italic"></div>
+            <button class="btn btn-gold" style="width:100%" onclick="savePrazo('2')">Salvar Rodada 2</button>
+          </div>
+          <div class="card" style="padding:24px">
+            <div style="font-family:var(--font-display);font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:4px">Rodada 3</div>
+            <div style="font-size:0.85rem;color:#6b7280;margin-bottom:14px">Terceira e última rodada</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">Data e horário</label>
+              <input class="form-input" type="datetime-local" id="prazo-3">
+            </div>
+            <div id="prazo-3-display" style="font-family:var(--font-serif);font-size:0.9rem;color:#6b7280;margin-bottom:12px;font-style:italic"></div>
+            <button class="btn btn-gold" style="width:100%" onclick="savePrazo('3')">Salvar Rodada 3</button>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="card" style="padding:24px;margin-top:16px;background:#faf7f2;border:1px solid #f0e9de">
+          <div style="font-family:var(--font-display);font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#9ca3af;margin-bottom:10px">Preview — como aparece no site</div>
+          <div style="font-family:var(--font-serif);font-size:1rem;color:#374151;line-height:1.7">
+            Você pode voltar e editar até <strong id="preview-prazo" style="color:var(--gold-dark)">—</strong>
+          </div>
+        </div>
+
+      </section>
     </main>
   </div>
 </div>
@@ -626,6 +757,7 @@ body { background:#f9f5f0; color:#1f2937; }
 
 <!-- ══ SCRIPTS ═══════════════════════════════════════════════════ -->
 <script src="js/supabase.js"></script>
+<script src="js/config.js"></script>
 <script src="js/groups.js"></script>
 <script>
 const DASHBOARD_PASSWORD = '0912';
@@ -668,6 +800,7 @@ function loadSection(name) {
   if (name === 'convidados')    loadConvidados();
   if (name === 'confirmacoes')  loadConfirmacoes();
   if (name === 'presentes')     loadPresentes();
+  if (name === 'config')         loadConfig();
 }
 
 /* ══ SYNC GRUPOS TO SUPABASE ════════════════════════════════════ */
