@@ -357,6 +357,39 @@ body { background: var(--dark); color: var(--cream); }
 .section-fade { opacity:0; transform:translateY(18px); transition:opacity 0.6s ease,transform 0.6s ease; }
 .section-fade.visible { opacity:1; transform:translateY(0); }
 
+/* ATALHOS PÓS-CONFIRMAÇÃO */
+#post-confirm-links {
+  display: none;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(201,168,76,0.2);
+  text-align: center;
+}
+.post-confirm-title {
+  font-family: var(--font-display); font-size: 0.55rem;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--olive-light); margin-bottom: 16px;
+}
+.post-confirm-btns {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+}
+.post-confirm-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 24px; border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 2px; font-family: var(--font-display);
+  font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--gold-light); background: rgba(201,168,76,0.06);
+  text-decoration: none; transition: all 0.25s;
+}
+.post-confirm-btn:hover {
+  background: rgba(201,168,76,0.12); border-color: var(--gold);
+}
+.post-confirm-btn.primary {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #fff; border-color: transparent;
+}
+.post-confirm-btn.primary:hover { opacity: 0.9; }
+
 /* FOOTER */
 .site-footer {
   padding:36px 20px; text-align:center;
@@ -577,6 +610,21 @@ body { background: var(--dark); color: var(--cream); }
       </div>
       <br>
       <button class="btn btn-outline" id="edit-btn" onclick="RSVP.enterEdit()" style="margin-top:8px">✏️ Editar resposta</button>
+
+      <!-- Atalhos — só aparecem se alguém confirmou presença -->
+      <div id="post-confirm-links">
+        <div class="post-confirm-title">explore o site</div>
+        <div class="post-confirm-btns">
+          <a href="index.html" class="post-confirm-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Página Inicial
+          </a>
+          <a href="presentes.html" class="post-confirm-btn primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            Lista de Presentes
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -673,6 +721,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
   document.getElementById('tab-rsvp').classList.add('active');
   document.querySelectorAll('.hero-nav a').forEach(a => a.classList.remove('active'));
+
+  // Esconde a navbar no modo RSVP
+  const heroNav = document.querySelector('.hero-nav');
+  if (heroNav) heroNav.style.display = 'none';
 
   // Aguarda config + grupos carregarem
   let configOk = false, gruposOk = false;
@@ -845,6 +897,11 @@ function showSuccess() {
   document.getElementById('success-msg').innerHTML = msg;
   document.getElementById('success-banner').classList.add('visible');
   updateEditTimer();
+
+  // Mostra atalhos só se pelo menos uma pessoa confirmou "Vai"
+  const temConfirmado = grupo.membros.some(n => confirmacoes[n] === 'yes');
+  const atalhos = document.getElementById('post-confirm-links');
+  if (atalhos) atalhos.style.display = temConfirmado ? 'block' : 'none';
 }
 
 function updatePrazoDisplay() {
