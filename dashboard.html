@@ -747,6 +747,88 @@ function loadSection(name) {
 }
 
 /* ══ SYNC GRUPOS TO SUPABASE ════════════════════════════════════ */
+
+/* ── CONFIGURAÇÕES ── */
+async function loadConfig() {
+  try {
+    const rows = await sbSelect('configuracoes') || [];
+    const cfg = {};
+    rows.forEach(r => cfg[r.chave] = r.valor);
+
+    const rodada = cfg.rodada_ativa || '1';
+    const label = document.getElementById('rodada-ativa-label');
+    if (label) label.textContent = `Rodada ${rodada}`;
+    updateRodadaBtns(rodada);
+
+    for (let i = 1; i <= 3; i++) {
+      const val = cfg[`prazo_rodada_${i}`];
+      const inp = document.getElementById(`prazo-${i}`);
+      const disp = document.getElementById(`prazo-${i}-display`);
+      if (val && inp) {
+        const d = new Date(val);
+        const local = new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+        inp.value = local;
+      }
+      if (val && disp) disp.textContent = formatPrazo(val);
+    }
+
+    const prazoAtivo = cfg[`prazo_rodada_${rodada}`];
+    const prev = document.getElementById('preview-prazo');
+    if (prazoAtivo && prev) prev.textContent = formatPrazo(prazoAtivo);
+  } catch(e) { toast('Erro ao carregar configurações', 'error'); console.error(e); }
+}
+
+function formatPrazo(val) {
+  const d = new Date(val);
+  const meses = ['janeiro','fevereiro','março','abril','maio','junho',
+                 'julho','agosto','setembro','outubro','novembro','dezembro'];
+  return `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()} às ${String(d.getHours()).padStart(2,'0')}h${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+async function savePrazo(rodada) {
+  const input = document.getElementById(`prazo-${rodada}`);
+  if (!input || !input.value) { toast('Selecione uma data e horário', 'error'); return; }
+  const isoVal = new Date(input.value).toISOString();
+  try {
+    await sbDelete('configuracoes', `chave=eq.prazo_rodada_${rodada}`);
+    await sbInsert('configuracoes', { chave: `prazo_rodada_${rodada}`, valor: isoVal });
+    const disp = document.getElementById(`prazo-${rodada}-display`);
+    if (disp) disp.textContent = formatPrazo(isoVal);
+    // Atualiza preview se for a rodada ativa
+    const labelEl = document.getElementById('rodada-ativa-label');
+    const rodadaAtiva = labelEl ? labelEl.textContent.replace('Rodada ','').trim() : '1';
+    if (rodadaAtiva === String(rodada)) {
+      const prev = document.getElementById('preview-prazo');
+      if (prev) prev.textContent = formatPrazo(isoVal);
+    }
+    toast(`Prazo da Rodada ${rodada} salvo! ✓`);
+  } catch(e) { toast('Erro ao salvar prazo', 'error'); console.error(e); }
+}
+
+async function setRodada(rodada) {
+  try {
+    await sbDelete('configuracoes', `chave=eq.rodada_ativa`);
+    await sbInsert('configuracoes', { chave: 'rodada_ativa', valor: String(rodada) });
+    const label = document.getElementById('rodada-ativa-label');
+    if (label) label.textContent = `Rodada ${rodada}`;
+    updateRodadaBtns(rodada);
+    const inp = document.getElementById(`prazo-${rodada}`);
+    if (inp && inp.value) {
+      const prev = document.getElementById('preview-prazo');
+      if (prev) prev.textContent = formatPrazo(new Date(inp.value).toISOString());
+    }
+    toast(`Rodada ${rodada} ativada! ✓`);
+  } catch(e) { toast('Erro ao ativar rodada', 'error'); console.error(e); }
+}
+
+function updateRodadaBtns(rodada) {
+  for (let i = 1; i <= 3; i++) {
+    const btn = document.getElementById(`btn-rodada-${i}`);
+    if (!btn) continue;
+    btn.className = String(i) === String(rodada) ? 'btn btn-gold' : 'btn btn-outline';
+  }
+}
+
 async function syncGroupsToSupabase() {
   try {
     const existing = await sbSelect('grupos');

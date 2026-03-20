@@ -713,7 +713,10 @@ if (hint) window.addEventListener('scroll', () => {
 
 /* ── RSVP ── */
 /* Prazo vem do CONFIG (Supabase) */
-const isPastDeadline = () => window.CONFIG.isPastDeadline;
+const isPastDeadline = () => {
+  if (!window.CONFIG || !window.CONFIG.loaded) return false; // não bloqueia antes de carregar
+  return window.CONFIG.isPastDeadline;
+};
 
 let grupoId, grupo, confirmacoes = {}, isPreview = false;
 let rsvpInited = false;
