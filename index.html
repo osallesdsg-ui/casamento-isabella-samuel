@@ -749,8 +749,6 @@ body { background: var(--dark); color: var(--cream); }
       </a>
     </div>
 
-    <div class="ornament" style="padding:16px 0;opacity:0.5">Isabella &amp; Samuel · 07.11.2026</div>
-
     <!-- ── COMO CHEGAR ── -->
     <div class="section-divider section-fade"><span>como chegar</span></div>
 
@@ -856,6 +854,8 @@ body { background: var(--dark); color: var(--cream); }
       </div>
 
     </div>
+
+    <div class="ornament section-fade" style="padding:24px 0 8px;opacity:0.5">Isabella &amp; Samuel · 07.11.2026</div>
 
   </div>
 
@@ -1172,11 +1172,11 @@ function showSuccess() {
   if (confirmados.length && !naoVao.length && !pendentes.length)
     msg = `Que alegria ter ${list(confirmados)} com a gente neste dia tão especial! 🌿<br><br>Até 07 de novembro! 💛`;
   else if (!confirmados.length && naoVao.length)
-    msg = `Sentiremos sua falta… 🤍<br><br>Você pode editar até 20 de março.`;
+    msg = `Sentiremos sua falta… 🤍<br><br>Você pode editar até ${window.CONFIG.prazoFormatado || "o prazo vigente"}.`;
   else {
     const parts = [];
     if (confirmados.length) parts.push(`Que alegria ter ${list(confirmados)} com a gente! 🌿`);
-    if (naoVao.length) parts.push(`Sentiremos a falta de ${list(naoVao)}… mas você pode editar até 20 de março. 💛`);
+    if (naoVao.length) parts.push(`Sentiremos a falta de ${list(naoVao)}… mas você pode editar até ${window.CONFIG.prazoFormatado || 'o prazo vigente'}. 💛`);
     msg = parts.join('<br>');
   }
   if (pendentes.length===1) msg+=`<br><br><span style="color:var(--gold)">${pendentes[0]}</span> ficou como pendente — não esqueça de voltar!`;
