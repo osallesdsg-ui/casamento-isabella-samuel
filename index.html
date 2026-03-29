@@ -1184,6 +1184,7 @@ function showSuccess() {
   document.getElementById('success-msg').innerHTML = msg;
   document.getElementById('success-banner').classList.add('visible');
   updateEditTimer();
+  updatePrazoDisplay(); // garante prazo correto ao exibir banner
 
   // Mostra atalhos só se pelo menos uma pessoa confirmou "Vai"
   const temConfirmado = grupo.membros.some(n => confirmacoes[n] === 'yes');
@@ -1200,10 +1201,13 @@ function toggleFaq(btn) {
 
 function updatePrazoDisplay() {
   const prazo = window.CONFIG.prazoFormatado;
-  const el = document.getElementById('prazo-instrucoes');
-  if (el && prazo) el.textContent = prazo;
+  if (!prazo) return;
+  const instrucoes = document.getElementById('prazo-instrucoes');
+  if (instrucoes) instrucoes.textContent = prazo;
+  const deadline = document.getElementById('edit-deadline');
+  if (deadline) deadline.textContent = prazo;
   const closed = document.getElementById('closed-msg');
-  if (closed && prazo) closed.textContent = `O prazo de confirmação encerrou em ${prazo}. 🕊️`;
+  if (closed) closed.textContent = `O prazo de confirmação encerrou em ${prazo}. 🕊️`;
 }
 window.addEventListener('config-loaded', updatePrazoDisplay);
 
