@@ -1191,6 +1191,13 @@ function showSuccess() {
   if (atalhos) atalhos.style.display = temConfirmado ? 'block' : 'none';
 }
 
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
 function updatePrazoDisplay() {
   const prazo = window.CONFIG.prazoFormatado;
   const el = document.getElementById('prazo-instrucoes');
