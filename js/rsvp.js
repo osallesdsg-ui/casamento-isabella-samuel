@@ -230,6 +230,11 @@
 
   /* ── SUCCESS BANNER ── */
   function showSuccess() {
+     
+     const temConfirmado = grupo.membros.some(n => confirmacoes[n] === 'yes');
+     const atalhos = document.getElementById('post-confirm-links');
+     if (atalhos) atalhos.style.display = temConfirmado ? 'block' : 'none';
+      
     const banner = document.getElementById('success-banner');
     if (!banner) return;
 
